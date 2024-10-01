@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Quartz;
 using PassportApplication.Models;
 
 namespace PassportApplication
@@ -8,6 +9,7 @@ namespace PassportApplication
     /// </summary>
     public class Startup
     {
+
         /// <summary>
         /// Constructor of Setup
         /// </summary>
