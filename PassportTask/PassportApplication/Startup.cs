@@ -1,6 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 using Quartz;
 using PassportApplication.Models;
+using PassportApplication.Jobs;
+using PassportApplication.Services;
+using PassportApplication.Services.Interfaces;
+using Quartz.Impl;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace PassportApplication
 {
@@ -28,14 +35,46 @@ namespace PassportApplication
         /// Services setup
         /// </summary>
         /// <param name="services"></param>
-        public void ConfigureServices(IServiceCollection services)
+        public async void ConfigureServices(IServiceCollection services)
         {
             string? connection = Configuration.GetConnectionString("DefaultConnection");
+
             services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connection));
 
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connection));
+
+            serviceCollection.AddOptions().Configure<UpdateDatabaseJobOptions>(opt =>
+            {
+                opt.FileUrl = Configuration["Download:FileUrl"];
+            });
+
+            serviceCollection.AddSingleton<UpdateDatabaseJob>();
+            serviceCollection.AddSingleton<IUpdateDatabaseService, UpdateDatabaseService>();
+
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+
+            var scheduler = await StdSchedulerFactory.GetDefaultScheduler();
+            await scheduler.Start();
+
+            var job = JobBuilder.Create<UpdateDatabaseJob>()
+                .WithIdentity("UpdateDatabaseJob", "Group1")
+                .Build();
+
+            var trigger = TriggerBuilder.Create()
+                .WithIdentity("UpdateDatabaseTrigger", "Group1")
+                .StartNow()
+                .WithSimpleSchedule(s => s
+                    .WithIntervalInHours(24)
+                    .RepeatForever())
+                .Build();
+
+            scheduler.JobFactory = new UpdateDatabaseJobFactory(serviceProvider);
+            await scheduler.ScheduleJob(job, trigger);
         }
 
         /// <summary>

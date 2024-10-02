@@ -1,7 +1,9 @@
-﻿namespace PassportApplication.Services.Interfaces
+﻿using PassportApplication.Models;
+
+namespace PassportApplication.Services.Interfaces
 {
     public interface IUpdateDatabaseService
     {
-        public Task UpdateDatabase(string url);
+        public Task UpdateDatabase(string url, ApplicationContext applicationContext);
     }
 }
