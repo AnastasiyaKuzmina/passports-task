@@ -20,10 +20,9 @@ namespace PassportApplication.Jobs
             _options = options.Value;
         }
 
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
-            _updateDatabaseService.UpdateDatabase(_options.FileUrl, _applicationContext);
-            return Task.CompletedTask;
+            await _updateDatabaseService.UpdateDatabase(_options.FileUrl, _applicationContext);
         }
     }
 }

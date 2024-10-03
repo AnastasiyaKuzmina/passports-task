@@ -1,13 +1,11 @@
-﻿using System.Diagnostics;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Quartz;
+using Quartz.Impl;
+
 using PassportApplication.Models;
 using PassportApplication.Jobs;
 using PassportApplication.Services;
 using PassportApplication.Services.Interfaces;
-using Quartz.Impl;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace PassportApplication
 {
