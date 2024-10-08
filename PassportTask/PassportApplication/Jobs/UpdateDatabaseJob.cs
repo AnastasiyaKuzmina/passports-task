@@ -1,7 +1,6 @@
 ﻿using PassportApplication.Models;
 using PassportApplication.Services;
 using PassportApplication.Services.Interfaces;
-using System.Diagnostics;
 using Microsoft.Extensions.Options;
 using Quartz;
 

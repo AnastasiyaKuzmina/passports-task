@@ -32,7 +32,7 @@ namespace PassportApplication
         /// <summary>
         /// Services setup
         /// </summary>
-        /// <param name="services"></param>
+        /// <param name="services">Instance of an object implementing IServiceCollection</param>
         public async void ConfigureServices(IServiceCollection services)
         {
             string? connection = Configuration.GetConnectionString("DefaultConnection");
@@ -43,43 +43,43 @@ namespace PassportApplication
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connection));
+            //var serviceCollection = new ServiceCollection();
+            //serviceCollection.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connection));
 
-            serviceCollection.AddOptions().Configure<UpdateDatabaseJobOptions>(opt =>
-            {
-                opt.FileUrl = Configuration["Download:FileUrl"];
-            });
+            //serviceCollection.AddOptions().Configure<UpdateDatabaseJobOptions>(opt =>
+            //{
+            //    opt.FileUrl = Configuration["Download:FileUrl"];
+            //});
 
-            serviceCollection.AddSingleton<UpdateDatabaseJob>();
-            serviceCollection.AddSingleton<IUpdateDatabaseService, UpdateDatabaseService>();
+            //serviceCollection.AddSingleton<UpdateDatabaseJob>();
+            //serviceCollection.AddSingleton<IUpdateDatabaseService, UpdateDatabaseService>();
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            //var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            var scheduler = await StdSchedulerFactory.GetDefaultScheduler();
-            await scheduler.Start();
+            //var scheduler = await StdSchedulerFactory.GetDefaultScheduler();
+            //await scheduler.Start();
 
-            var job = JobBuilder.Create<UpdateDatabaseJob>()
-                .WithIdentity("UpdateDatabaseJob", "Group1")
-                .Build();
+            //var job = JobBuilder.Create<UpdateDatabaseJob>()
+            //    .WithIdentity("UpdateDatabaseJob", "Group1")
+            //    .Build();
 
-            var trigger = TriggerBuilder.Create()
-                .WithIdentity("UpdateDatabaseTrigger", "Group1")
-                .StartNow()
-                .WithSimpleSchedule(s => s
-                    .WithIntervalInHours(24)
-                    .RepeatForever())
-                .Build();
+            //var trigger = TriggerBuilder.Create()
+            //    .WithIdentity("UpdateDatabaseTrigger", "Group1")
+            //    .StartNow()
+            //    .WithSimpleSchedule(s => s
+            //        .WithIntervalInHours(24)
+            //        .RepeatForever())
+            //    .Build();
 
-            scheduler.JobFactory = new UpdateDatabaseJobFactory(serviceProvider);
-            await scheduler.ScheduleJob(job, trigger);
+            //scheduler.JobFactory = new UpdateDatabaseJobFactory(serviceProvider);
+            //await scheduler.ScheduleJob(job, trigger);
         }
 
         /// <summary>
         /// Usage setup
         /// </summary>
-        /// <param name="app"></param>
-        /// <param name="env"></param>
+        /// <param name="app">Instance of an object implementing IApplicationBuilder</param>
+        /// <param name="env">Instance of an object implementing IWebHostEnvironment</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
