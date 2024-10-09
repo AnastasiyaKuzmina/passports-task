@@ -1,7 +1,9 @@
-﻿namespace PassportApplication.Services.Interfaces
+﻿using PassportApplication.Models;
+
+namespace PassportApplication.Services.Interfaces
 {
-    public interface IParserService<T> where T : class
+    public interface IParserService
     {
-        public T? Parse(string input);
+        public Task<List<Passport>> Parse(string filePath);
     }
 }

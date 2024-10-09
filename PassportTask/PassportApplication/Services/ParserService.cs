@@ -4,27 +4,43 @@ using System.Text.RegularExpressions;
 
 namespace PassportApplication.Services
 {
-    public class ParserService : IParserService<Passport>
+    public class ParserService : IParserService
     {
         const char delimeter = ',';
         const string seriesTemplate = @"\d{4}";
         const string numberTemplate = @"\d{6}";
 
-        public Passport? Parse(string input)
+        public async Task<List<Passport>> Parse(string filePath)
         {
-            string[] passportFields = input.Split(delimeter);
+            List<Passport> result = new List<Passport>();
+            string[] passportFields;
 
-            if (passportFields.Length != 2 )
+            await Task.Run(() =>
             {
-                return null;
-            }
+                using (var streamReader = new StreamReader(filePath))
+                {
+                    string? line = streamReader.ReadLine();
 
-            if (!CheckPassport(passportFields[0], passportFields[1])) 
-            { 
-                return null; 
-            }
+                    while ((line = streamReader.ReadLine()) != null)
+                    {
+                        passportFields = line.Split(delimeter);
 
-            return new Passport { Series = passportFields[0], Number = passportFields[1] };
+                        if (passportFields.Length != 2)
+                        {
+                            continue;
+                        }
+
+                        if (!CheckPassport(passportFields[0], passportFields[1]))
+                        {
+                            continue;
+                        }
+
+                        result.Add(new Passport { Series = passportFields[0], Number = passportFields[1] });
+                    }
+                }
+            });
+
+            return result;
         }
 
         private bool CheckPassport(string series, string number)

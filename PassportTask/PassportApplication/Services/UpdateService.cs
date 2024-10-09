@@ -14,11 +14,11 @@ namespace PassportApplication.Services
         private readonly IConfiguration _configuration;
         private readonly IFileDownloadService _fileDownloadService;
         private readonly IUnpackService _unpackService;
-        private readonly IParserService<Passport> _parserService;
+        private readonly IParserService _parserService;
         private readonly IDatabaseService _databaseService;
 
         public UpdateService(IFileDownloadService fileDownloadService, IUnpackService unpackService,
-                            IParserService<Passport> parserService, IDatabaseService databaseService, 
+                            IParserService parserService, IDatabaseService databaseService, 
                             IConfiguration configuration)
         {
             _fileDownloadService = fileDownloadService;
@@ -33,20 +33,9 @@ namespace PassportApplication.Services
             await _fileDownloadService.DownloadFile(FileUrl, DirectoryPath, FilePath);
             await _unpackService.Unpack(FilePath, ExtractPath);
 
-            using (var streamReader = new StreamReader(Directory.GetFiles(ExtractPath)[0]))
-            {
-                Passport? passport;
-                string? line = await streamReader.ReadLineAsync();
+            List<Passport> passports = await _parserService.Parse(Directory.GetFiles(ExtractPath)[0]);
 
-                while ((line = await streamReader.ReadLineAsync()) != null)
-                {
-                    passport = _parserService.Parse(line);
-                    if (passport != null)
-                    {
-                        await _databaseService.Analyse(passport);
-                    }
-                }
-            }
+            await _databaseService.Update(passports);
         }
     }
 }

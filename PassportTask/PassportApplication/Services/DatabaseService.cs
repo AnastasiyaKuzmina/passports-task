@@ -12,12 +12,33 @@ namespace PassportApplication.Services
             _applicationContext = applicationContext;
         }
 
-        public async Task Analyse(Passport passport)
+        public async Task Update(List<Passport> passports)
         {
+            var databasePassports = _applicationContext.Passports;
+            var deletedPassports = databasePassports.Except(passports);
+            var addedPassports = passports.Except(databasePassports);
+
+            foreach (var passport in deletedPassports)
+            {
+                Remove(passport);
+            }
+
            if (Exist(passport))
             {
 
             }
+        }
+
+        private void Remove(Passport passport)
+        {
+            _applicationContext.Passports.Remove(passport);
+            _applicationContext.PassportsChangesHistory.Add(new PassportChangesHistory 
+            { 
+                Series = passport.Series, 
+                Number = passport.Number, 
+                ChangeType = false, 
+                Date = DateOnly.FromDateTime(DateTime.Now) 
+            });
         }
 
         private bool Exist(Passport passport)
