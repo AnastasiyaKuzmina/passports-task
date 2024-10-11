@@ -6,6 +6,10 @@
     public class PassportChangesHistory
     {
         /// <summary>
+        /// Change ID
+        /// </summary>
+        public int Id { get; set; }
+        /// <summary>
         /// Passport series
         /// </summary>
         public string Series { get; set; } = null!;

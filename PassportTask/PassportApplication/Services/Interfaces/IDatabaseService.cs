@@ -4,6 +4,6 @@ namespace PassportApplication.Services.Interfaces
 {
     public interface IDatabaseService
     {
-        public Task Analyse(Passport record);
+        public Task Update(List<Passport> passports);
     }
 }

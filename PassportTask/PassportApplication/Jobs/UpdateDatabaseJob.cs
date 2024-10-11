@@ -2,26 +2,26 @@
 using PassportApplication.Services;
 using PassportApplication.Services.Interfaces;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
 using Quartz;
 
 namespace PassportApplication.Jobs
 {
     public class UpdateDatabaseJob : IJob
     {
-        private readonly IUpdateDatabaseService _updateDatabaseService;
-        private readonly ApplicationContext _applicationContext;
-        private readonly UpdateDatabaseJobOptions _options;
+        private readonly IUpdateService _updateService;
+        //private readonly UpdateDatabaseJobOptions _options;
 
-        public UpdateDatabaseJob(IUpdateDatabaseService updateDatabaseService, ApplicationContext applicationContext, IOptions<UpdateDatabaseJobOptions> options)
+        public UpdateDatabaseJob(IUpdateService updateService, ApplicationContext applicationContext)
         {
-            _updateDatabaseService = updateDatabaseService;
-            _applicationContext = applicationContext;
-            _options = options.Value;
+            _updateService = updateService;
+            //_options = options.Value;
         }
 
         public async Task Execute(IJobExecutionContext context)
         {
-            await _updateDatabaseService.UpdateDatabase(_options.FileUrl, _applicationContext);
+            Debug.WriteLine("Here!");
+            await _updateService.Update();
         }
     }
 }
