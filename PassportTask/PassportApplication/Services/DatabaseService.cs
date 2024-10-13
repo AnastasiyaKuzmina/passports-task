@@ -1,78 +1,54 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 using PassportApplication.Models;
 using PassportApplication.Services.Interfaces;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using EFCore.BulkExtensions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+
 
 namespace PassportApplication.Services
 {
+    /// <summary>
+    /// Database management service
+    /// </summary>
     public class DatabaseService : IDatabaseService
     {
         private readonly ApplicationContext _applicationContext;
 
+        /// <summary>
+        /// Constructor of DatabaseService
+        /// </summary>
+        /// <param name="applicationContext">Application context</param>
         public DatabaseService(ApplicationContext applicationContext) 
         {
             _applicationContext = applicationContext;
         }
 
+        /// <summary>
+        /// Updates the database
+        /// </summary>
+        /// <param name="passports">List of passports</param>
+        /// <returns></returns>
         public async Task Update(List<Passport> passports)
         {
-            await Task.Run(() =>
-            {
-                var databasePassports = _applicationContext.Passports.ToList();
-                var deletedPassports = databasePassports.Except(passports).ToList();
-                var addedPassports = passports.Except(databasePassports).ToList();
-
-                foreach (var passport in deletedPassports)
-                {
-                    Remove(passport);
-                }
-
-                foreach (var passport in addedPassports)
-                {
-                    Add(passport);
-                }
-
-                _applicationContext.SaveChanges();
-            });
-
             //await Task.Run(() =>
             //{
-                //EntityFrameworkManager.PreBulkSaveChanges = ctx =>
-                //{
-                //    List<PassportChangesHistory> passportChanges = new List<PassportChangesHistory>();
-                //    DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-                //    ctx.ChangeTracker.DetectChanges();
+            //    var databasePassports = _applicationContext.Passports.ToList();
+            //    var deletedPassports = databasePassports.Except(passports).ToList();
+            //    var addedPassports = passports.Except(databasePassports).ToList();
 
-                //    var added = ctx.ChangeTracker.Entries()
-                //    .Where(t => t.State == EntityState.Added)
-                //    .Select(t => t.Entity as Passport)
-                //    .ToList();
+            //    foreach (var passport in deletedPassports)
+            //    {
+            //        Remove(passport);
+            //    }
 
-                //    Debug.WriteLine("Added:" + added.Count);
+            //    foreach (var passport in addedPassports)
+            //    {
+            //        Add(passport);
+            //    }
 
-                //    foreach (var entity in added)
-                //    {
-                //        passportChanges.Add(new PassportChangesHistory { Series = entity.Series, Number = entity.Number, ChangeType = true, Date = date });
-                //    }
-
-                //    var deleted = ctx.ChangeTracker.Entries()
-                //        .Where(t => t.State == EntityState.Deleted)
-                //        .Select(t => t.Entity as Passport)
-                //        .ToList();
-
-                //    foreach (var entity in deleted)
-                //    {
-                //        passportChanges.Add(new PassportChangesHistory { Series = entity.Series, Number = entity.Number, ChangeType = false, Date = date });
-                //    }
-
-                //    ctx.BulkInsert(passportChanges);
-                //};
-
-            //    _applicationContext.BulkInsertOrUpdateOrDelete(passports);
+            //    _applicationContext.SaveChanges();
             //});
+
+            await _applicationContext.BulkSynchronizeAsync(passports);
         }
 
         private void Remove(Passport passport)
@@ -98,14 +74,5 @@ namespace PassportApplication.Services
                 Date = DateOnly.FromDateTime(DateTime.Now)
             });
         }
-
-        //private bool Exist(Passport passport)
-        //{
-        //    if (_applicationContext.Passports.Any(p => (p.Series == passport.Series) && (p.Number == passport.Number)))
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}
     }
 }

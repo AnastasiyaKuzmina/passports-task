@@ -6,7 +6,6 @@ using PassportApplication.Models;
 using PassportApplication.Jobs;
 using PassportApplication.Services;
 using PassportApplication.Services.Interfaces;
-using System.Configuration;
 
 namespace PassportApplication
 {
@@ -45,15 +44,9 @@ namespace PassportApplication
             services.AddSwaggerGen();
 
             var serviceCollection = new ServiceCollection();
+
             serviceCollection.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connection));
-
-            //serviceCollection.AddOptions().Configure<UpdateDatabaseJobOptions>(opt =>
-            //{
-            //    opt.FileUrl = Configuration["Download:FileUrl"];
-            //});
-
             serviceCollection.AddSingleton<UpdateDatabaseJob>();
-            //serviceCollection.AddSingleton<IConfiguration, Configuration>();
             serviceCollection.AddSingleton<IFileDownloadService, FileDownloadService>();
             serviceCollection.AddSingleton<IDatabaseService, DatabaseService>();
             serviceCollection.AddSingleton<IParserService, ParserService>();

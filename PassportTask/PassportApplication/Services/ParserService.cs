@@ -1,15 +1,24 @@
-﻿using PassportApplication.Models;
+﻿using System.Text.RegularExpressions;
+
+using PassportApplication.Models;
 using PassportApplication.Services.Interfaces;
-using System.Text.RegularExpressions;
 
 namespace PassportApplication.Services
 {
+    /// <summary>
+    /// Csv parser service
+    /// </summary>
     public class ParserService : IParserService
     {
         const char delimeter = ',';
         const string seriesTemplate = @"\d{4}";
         const string numberTemplate = @"\d{6}";
 
+        /// <summary>
+        /// Parses csv file
+        /// </summary>
+        /// <param name="filePath">File path</param>
+        /// <returns></returns>
         public async Task<List<Passport>> Parse(string filePath)
         {
             List<Passport> result = new List<Passport>();

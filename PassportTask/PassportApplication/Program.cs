@@ -1,6 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using PassportApplication.Models;
-
 namespace PassportApplication
 {
     public class Program

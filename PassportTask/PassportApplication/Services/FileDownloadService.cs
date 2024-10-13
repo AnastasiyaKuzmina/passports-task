@@ -2,8 +2,18 @@
 
 namespace PassportApplication.Services
 {
+    /// <summary>
+    /// File download service
+    /// </summary>
     public class FileDownloadService : IFileDownloadService
     {
+        /// <summary>
+        /// Downloads a csv file
+        /// </summary>
+        /// <param name="url">File's url</param>
+        /// <param name="DirectoryPath">Directory path</param>
+        /// <param name="FilePath">File path</param>
+        /// <returns></returns>
         public async Task DownloadFile(string url, string DirectoryPath, string FilePath)
         {
             if (!Directory.Exists(DirectoryPath))
