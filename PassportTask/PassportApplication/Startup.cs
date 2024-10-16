@@ -1,11 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Quartz;
-using Quartz.Impl;
-
-using PassportApplication.Models;
-using PassportApplication.Jobs;
-using PassportApplication.Services;
-using PassportApplication.Services.Interfaces;
+using PassportApplication.Database;
 
 namespace PassportApplication
 {
@@ -36,42 +30,11 @@ namespace PassportApplication
         public async void ConfigureServices(IServiceCollection services)
         {
             string? connection = Configuration.GetConnectionString("DefaultConnection");
-
-            services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connection));
-
+            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-
-            var serviceCollection = new ServiceCollection();
-
-            serviceCollection.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connection));
-            serviceCollection.AddSingleton<UpdateDatabaseJob>();
-            serviceCollection.AddSingleton<IFileDownloadService, FileDownloadService>();
-            serviceCollection.AddSingleton<IDatabaseService, DatabaseService>();
-            serviceCollection.AddSingleton<IParserService, ParserService>();
-            serviceCollection.AddSingleton<IUnpackService, UnpackService>();
-            serviceCollection.AddSingleton<IUpdateService, UpdateService>();
-
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-
-            var scheduler = await StdSchedulerFactory.GetDefaultScheduler();
-            await scheduler.Start();
-
-            var job = JobBuilder.Create<UpdateDatabaseJob>()
-                .WithIdentity("UpdateDatabaseJob", "Group1")
-                .Build();
-
-            var trigger = TriggerBuilder.Create()
-                .WithIdentity("UpdateDatabaseTrigger", "Group1")
-                .StartNow()
-                .WithSimpleSchedule(s => s
-                    .WithIntervalInMinutes(2)
-                    .RepeatForever())
-                .Build();
-
-            scheduler.JobFactory = new UpdateDatabaseJobFactory(serviceProvider);
-            await scheduler.ScheduleJob(job, trigger);
+            services.AddQuartzService(connection);
         }
 
         /// <summary>

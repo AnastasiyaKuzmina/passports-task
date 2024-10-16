@@ -8,6 +8,7 @@ namespace PassportApplication.Services
     /// </summary>
     public class UnpackService : IUnpackService
     {
+        IConfiguration _configuration;
         /// <summary>
         /// Unpacks the file
         /// </summary>

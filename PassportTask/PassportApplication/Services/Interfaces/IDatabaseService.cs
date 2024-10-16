@@ -10,8 +10,7 @@ namespace PassportApplication.Services.Interfaces
         /// <summary>
         /// Updates the database
         /// </summary>
-        /// <param name="passports">List of passports</param>
         /// <returns></returns>
-        public Task Update(List<Passport> passports);
+        public Task UpdateAsync();
     }
 }

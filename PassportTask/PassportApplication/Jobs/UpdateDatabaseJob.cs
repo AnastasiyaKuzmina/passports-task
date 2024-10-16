@@ -9,7 +9,7 @@ namespace PassportApplication.Jobs
     {
         private readonly IUpdateService _updateService;
 
-        public UpdateDatabaseJob(IUpdateService updateService, ApplicationContext applicationContext)
+        public UpdateDatabaseJob(IUpdateService updateService)
         {
             _updateService = updateService;
         }
