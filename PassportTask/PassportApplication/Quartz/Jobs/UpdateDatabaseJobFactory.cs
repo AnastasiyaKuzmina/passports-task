@@ -1,7 +1,7 @@
 ﻿using Quartz;
 using Quartz.Spi;
 
-namespace PassportApplication.Jobs
+namespace PassportApplication.Quartz.Jobs
 {
     public class UpdateDatabaseJobFactory : IJobFactory
     {

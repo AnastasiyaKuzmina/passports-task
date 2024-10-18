@@ -1,7 +1,7 @@
 ﻿using Quartz;
 using Quartz.Spi;
 
-namespace PassportApplication
+namespace PassportApplication.Quartz
 {
     public class QuartzHostedService : IHostedService
     {

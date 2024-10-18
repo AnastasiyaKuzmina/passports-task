@@ -1,17 +1,12 @@
-﻿using PassportApplication.Models;
-using PassportApplication.Services.Interfaces;
+﻿using PassportApplication.Services.Interfaces;
 
 namespace PassportApplication.Services
 {
     /// <summary>
-    /// Update database service
+    /// Implements IUpdateService
     /// </summary>
     public class UpdateService : IUpdateService
-    { 
-        //const string DirectoryPath = "./Files";
-        //const string ExtractPath = DirectoryPath + "/File/";
-        //const string FilePath = DirectoryPath + "/Passports.zip";
-
+    {
         private readonly IConfiguration _configuration;
         private readonly IFileDownloadService _fileDownloadService;
         private readonly IUnpackService _unpackService;
@@ -36,16 +31,26 @@ namespace PassportApplication.Services
         /// Updates database 
         /// </summary>
         /// <returns></returns>
-        public async Task Update()
+        public async Task UpdateAsync()
         {
-            string FileUrl = _configuration.GetSection("DatabaseUpdate").GetSection("FileUrl").Value;
-            string DirectoryPath = _configuration.GetSection("DatabaseUpdate").GetSection("DirectoryPath").Value;
-            string FilePath = DirectoryPath + _configuration.GetSection("DatabaseUpdate").GetSection("ZipPath").Value;
-            string ExtractPath = DirectoryPath + _configuration.GetSection("DatabaseUpdate").GetSection("ExtractPath").Value;
+            string? FileUrl = _configuration.GetSection("DatabaseUpdate").GetSection("FileUrl").Value;
+            if (FileUrl == null) return;
 
-            await _fileDownloadService.DownloadFile(FileUrl, DirectoryPath, FilePath);
-            await _unpackService.Unpack(FilePath, ExtractPath);
-            await _databaseService.UpdateAsync();
+            string? DirectoryPath = _configuration.GetSection("DatabaseUpdate").GetSection("DirectoryPath").Value;
+            if (DirectoryPath == null) return;
+
+            string? ZipPath = _configuration.GetSection("DatabaseUpdate").GetSection("ZipPath").Value;
+            if (ZipPath == null) return;
+
+            string? ExtractFolder = _configuration.GetSection("DatabaseUpdate").GetSection("ExtractPath").Value;
+            if (ExtractFolder == null) return;
+
+            string FilePath = DirectoryPath + ZipPath;
+            string ExtractPath = DirectoryPath + ExtractFolder;
+
+            await _fileDownloadService.DownloadFileAsync(FileUrl, DirectoryPath, FilePath);
+            await _unpackService.UnpackAsync(FilePath, ExtractPath);
+            await _databaseService.UpdateAsync(Directory.GetFiles(ExtractPath)[0]);
         }
     }
 }

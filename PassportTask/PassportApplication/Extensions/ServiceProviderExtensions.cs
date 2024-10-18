@@ -1,38 +1,40 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PassportApplication.Database;
-using PassportApplication.Jobs;
-using PassportApplication.Services.Interfaces;
-using PassportApplication.Services;
-using System.Data;
 
 using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
 
-namespace PassportApplication
+using PassportApplication.Database;
+using PassportApplication.Services;
+using PassportApplication.Services.Interfaces;
+using PassportApplication.Quartz.Jobs;
+
+using QHostedService = PassportApplication.Quartz.QuartzHostedService;
+
+namespace PassportApplication.Extensions
 {
     public static class ServiceProviderExtensions
     {
-        public static void AddQuartzService(this IServiceCollection services, string? connection)
+        public static void AddQuartzService(this IServiceCollection services, string? connection, IConfiguration configuration)
         {
-            var quartzServiceProvider = GetQuartzServiceProvider(connection);
+            var quartzServiceProvider = GetQuartzServiceProvider(connection, configuration);
 
             services.AddSingleton<IJobFactory>(f => new UpdateDatabaseJobFactory(quartzServiceProvider));
             services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
             services.AddJob();
             services.AddTrigger();
-            services.AddHostedService<QuartzHostedService>();
+            services.AddHostedService<QHostedService>();
         }
 
-        private static ServiceProvider GetQuartzServiceProvider(string? connection)
+        private static ServiceProvider GetQuartzServiceProvider(string? connection, IConfiguration configuration)
         {
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
+            serviceCollection.AddSingleton(c => configuration);
             serviceCollection.AddSingleton<UpdateDatabaseJob>();
             serviceCollection.AddSingleton<IFileDownloadService, FileDownloadService>();
             serviceCollection.AddSingleton<IDatabaseService, DatabaseService>();
-            serviceCollection.AddSingleton<IDataReader, ParserService>();
             serviceCollection.AddSingleton<IUnpackService, UnpackService>();
             serviceCollection.AddSingleton<IUpdateService, UpdateService>();
 
@@ -45,7 +47,7 @@ namespace PassportApplication
                 .WithIdentity("UpdateDatabaseJob", "Group1")
                 .Build();
 
-            services.AddSingleton<IJobDetail>(j => job);
+            services.AddSingleton(j => job);
         }
 
         private static void AddTrigger(this IServiceCollection services)
@@ -58,7 +60,7 @@ namespace PassportApplication
                .RepeatForever())
                .Build();
 
-            services.AddSingleton<ITrigger>(t => trigger);
+            services.AddSingleton(t => trigger);
         }
     }
 }

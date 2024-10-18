@@ -1,18 +1,19 @@
 ﻿using System.Data;
 using System.Text.RegularExpressions;
 
-namespace PassportApplication.Services
+namespace PassportApplication.Readers
 {
     /// <summary>
-    /// Csv parser service
+    /// Implements IDataReader
     /// </summary>
-    public class ParserService : IDataReader
+    public class CsvReader : IDataReader
     {
         const char delimeter = ',';
         const string seriesTemplate = @"\d{4}";
         const string numberTemplate = @"\d{6}";
 
-        readonly StreamReader _streamReader = new StreamReader(Directory.GetFiles("./Files/File/")[0]);
+        readonly StreamReader _streamReader;
+
         readonly Func<string, bool>[] _constraintsTable =
             {
                 x => new Regex(seriesTemplate).IsMatch(x),
@@ -20,18 +21,20 @@ namespace PassportApplication.Services
             };
 
         string[] _currentLineValues;
-        string _currentLine;
+        string? _currentLine;
+
+        /// <summary>
+        /// CsvReader constructor
+        /// </summary>
+        /// <param name="FilePath">Path of the csv file</param>
+        public CsvReader(string FilePath)
+        {
+            _streamReader = new StreamReader(FilePath);
+        }
 
         public object GetValue(int i)
         {
-            try
-            {
-                return _currentLineValues[i];
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return _currentLineValues[i];
         }
 
         public bool Read()
@@ -39,7 +42,10 @@ namespace PassportApplication.Services
             if (_streamReader.EndOfStream) return false;
 
             _currentLine = _streamReader.ReadLine();
+            if (_currentLine == null) return false || Read();
+
             _currentLineValues = _currentLine.Split(delimeter);
+            if (_currentLineValues.Length != FieldCount) return false || Read();
 
             var invalidRow = false;
             for (int i = 0; i < _currentLineValues.Length; i++)

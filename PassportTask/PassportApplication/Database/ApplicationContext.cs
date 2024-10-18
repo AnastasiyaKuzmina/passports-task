@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using PassportApplication.Models;
-using System.Reflection.Emit;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace PassportApplication.Database
 {

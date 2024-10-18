@@ -3,7 +3,7 @@
 namespace PassportApplication.Services
 {
     /// <summary>
-    /// File download service
+    /// IImplements IFileDownloadService
     /// </summary>
     public class FileDownloadService : IFileDownloadService
     {
@@ -14,9 +14,9 @@ namespace PassportApplication.Services
         /// <param name="DirectoryPath">Directory path</param>
         /// <param name="FilePath">File path</param>
         /// <returns></returns>
-        public async Task DownloadFile(string url, string DirectoryPath, string FilePath)
+        public async Task DownloadFileAsync(string url, string DirectoryPath, string FilePath)
         {
-            if (!Directory.Exists(DirectoryPath))
+            if (Directory.Exists(DirectoryPath) == false)
             {
                 Directory.CreateDirectory(DirectoryPath);
             }

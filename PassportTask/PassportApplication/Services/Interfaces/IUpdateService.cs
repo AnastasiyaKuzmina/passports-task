@@ -9,6 +9,6 @@
         /// Updates database
         /// </summary>
         /// <returns></returns>
-        public Task Update();
+        public Task UpdateAsync();
     }
 }

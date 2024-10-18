@@ -1,36 +1,38 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
+﻿using System.Data;
 using System.Diagnostics;
-using PassportApplication.Services.Interfaces;
-using System.Data;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
+
 using PassportApplication.Database;
+using PassportApplication.Readers;
+using PassportApplication.Services.Interfaces;
 
 namespace PassportApplication.Services
 {
     /// <summary>
-    /// Database management service
+    /// Implements IDatabaseService
     /// </summary>
     public class DatabaseService : IDatabaseService
     {
         private readonly ApplicationContext _applicationContext;
-        private readonly IDataReader _reader;
 
         /// <summary>
         /// Constructor of DatabaseService
         /// </summary>
         /// <param name="applicationContext">Application context</param>
-        public DatabaseService(ApplicationContext applicationContext, IDataReader reader)
+        public DatabaseService(ApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
-            _reader = reader;
         }
 
         /// <summary>
         /// Updates the database
         /// </summary>
         /// <returns></returns>
-        public async Task UpdateAsync()
+        public async Task UpdateAsync(string FilePath)
         {
+            IDataReader reader = new CsvReader(FilePath);
             try
             {
                 using (var bulkCopy = new SqlBulkCopy(_applicationContext.Database.GetConnectionString(), SqlBulkCopyOptions.TableLock))
@@ -41,14 +43,13 @@ namespace PassportApplication.Services
                     bulkCopy.BulkCopyTimeout = 0;
                     bulkCopy.BatchSize = 5000;
 
-                    await bulkCopy.WriteToServerAsync(_reader);
+                    await bulkCopy.WriteToServerAsync(reader);
                 }
             }
             catch (Exception ex) 
             { 
                 Debug.WriteLine(ex);
             }
-            
         }
 
         //private void Remove(Passport passport)

@@ -3,7 +3,7 @@
 using PassportApplication.Models;
 using PassportApplication.Services.Interfaces;
 
-namespace PassportApplication.Jobs
+namespace PassportApplication.Quartz.Jobs
 {
     public class UpdateDatabaseJob : IJob
     {

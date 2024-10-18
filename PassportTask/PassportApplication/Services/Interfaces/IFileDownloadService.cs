@@ -12,6 +12,6 @@
         /// <param name="DirectoryPath">Directory path</param>
         /// <param name="FilePath">File path</param>
         /// <returns></returns>
-        public Task DownloadFile(string url, string DirectoryPath, string FilePath);
+        public Task DownloadFileAsync(string url, string DirectoryPath, string FilePath);
     }
 }

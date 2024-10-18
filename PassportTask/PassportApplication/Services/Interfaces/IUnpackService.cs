@@ -11,6 +11,6 @@
         /// <param name="FilePath">File path</param>
         /// <param name="ExtractPath">Extract path</param>
         /// <returns></returns>
-        public Task Unpack(string FilePath, string ExtractPath);
+        public Task UnpackAsync(string FilePath, string ExtractPath);
     }
 }

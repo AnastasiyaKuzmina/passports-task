@@ -1,6 +1,4 @@
-﻿using PassportApplication.Models;
-
-namespace PassportApplication.Services.Interfaces
+﻿namespace PassportApplication.Services.Interfaces
 {
     /// <summary>
     /// Database management interface
@@ -11,6 +9,6 @@ namespace PassportApplication.Services.Interfaces
         /// Updates the database
         /// </summary>
         /// <returns></returns>
-        public Task UpdateAsync();
+        public Task UpdateAsync(string FilePath);
     }
 }
