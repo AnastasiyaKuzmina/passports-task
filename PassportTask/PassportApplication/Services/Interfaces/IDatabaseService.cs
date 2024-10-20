@@ -3,12 +3,12 @@
     /// <summary>
     /// Database management interface
     /// </summary>
-    public interface IDatabaseService
+    public interface ICopyService
     {
         /// <summary>
         /// Updates the database
         /// </summary>
         /// <returns></returns>
-        public Task UpdateAsync(string FilePath);
+        public Task CopyAsync(string FilePath);
     }
 }

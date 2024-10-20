@@ -16,7 +16,7 @@ namespace PassportApplication.Quartz.Jobs
 
         public async Task Execute(IJobExecutionContext context)
         {
-            await _updateService.Update();
+            await _updateService.UpdateAsync();
         }
     }
 }

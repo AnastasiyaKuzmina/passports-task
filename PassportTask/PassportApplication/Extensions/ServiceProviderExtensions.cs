@@ -10,14 +10,40 @@ using PassportApplication.Services.Interfaces;
 using PassportApplication.Quartz.Jobs;
 
 using QHostedService = PassportApplication.Quartz.QuartzHostedService;
+using PassportApplication.Services.CopyServices;
+using System.Diagnostics;
 
 namespace PassportApplication.Extensions
 {
     public static class ServiceProviderExtensions
     {
-        public static void AddQuartzService(this IServiceCollection services, string? connection, IConfiguration configuration)
+        const string firstUpdateMode = "SqlBulkCopy";
+        const string secondUpdateMode = "PostgreSqlCopy";
+
+        public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
-            var quartzServiceProvider = GetQuartzServiceProvider(connection, configuration);
+            string updateMode = configuration.GetSection("UpdateMode").Value ?? "";
+
+            if (updateMode == firstUpdateMode)
+            {
+                string? sqlConnection = configuration.GetConnectionString("SqlConnection");
+                services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(sqlConnection));
+                return;
+            }
+
+            if (updateMode == secondUpdateMode)
+            {
+                string? NpgConnection = configuration.GetConnectionString("NpgSqlConnection");
+                services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(NpgConnection));
+                return;
+            }
+
+            throw new NotImplementedException();
+        }
+
+        public static void AddQuartzService(this IServiceCollection services, IConfiguration configuration)
+        {
+            var quartzServiceProvider = GetQuartzServiceProvider(configuration);
 
             services.AddSingleton<IJobFactory>(f => new UpdateDatabaseJobFactory(quartzServiceProvider));
             services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
@@ -26,19 +52,38 @@ namespace PassportApplication.Extensions
             services.AddHostedService<QHostedService>();
         }
 
-        private static ServiceProvider GetQuartzServiceProvider(string? connection, IConfiguration configuration)
+        private static ServiceProvider GetQuartzServiceProvider(IConfiguration configuration)
         {
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
+            serviceCollection.AddDatabase(configuration);
             serviceCollection.AddSingleton(c => configuration);
             serviceCollection.AddSingleton<UpdateDatabaseJob>();
             serviceCollection.AddSingleton<IFileDownloadService, FileDownloadService>();
-            serviceCollection.AddSingleton<IDatabaseService, DatabaseService>();
+            serviceCollection.AddCopy(configuration);
             serviceCollection.AddSingleton<IUnpackService, UnpackService>();
             serviceCollection.AddSingleton<IUpdateService, UpdateService>();
 
             return serviceCollection.BuildServiceProvider();
+        }
+
+        private static void AddCopy(this IServiceCollection services, IConfiguration configuration)
+        {
+            string updateMode = configuration.GetSection("UpdateMode").Value ?? "";
+
+            if (updateMode == firstUpdateMode)
+            {
+                services.AddSingleton<ICopyService, SqlBulkCopyService>();
+                return;
+            }
+
+            if (updateMode == secondUpdateMode)
+            {
+                services.AddSingleton<ICopyService, PostgreSqlCopyService>();
+                return;
+            }
+
+            throw new NotImplementedException();
         }
 
         private static void AddJob(this IServiceCollection services)

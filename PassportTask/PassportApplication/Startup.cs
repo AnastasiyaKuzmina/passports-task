@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PassportApplication.Database;
 using PassportApplication.Extensions;
+using System.Diagnostics;
 
 namespace PassportApplication
 {
@@ -30,12 +31,11 @@ namespace PassportApplication
         /// <param name="services">Instance of an object implementing IServiceCollection</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            string? connection = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
+            services.AddDatabase(Configuration);
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            services.AddQuartzService(connection, Configuration);
+            services.AddQuartzService(Configuration);
         }
 
         /// <summary>

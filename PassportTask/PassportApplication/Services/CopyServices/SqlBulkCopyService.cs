@@ -8,12 +8,12 @@ using PassportApplication.Database;
 using PassportApplication.Readers;
 using PassportApplication.Services.Interfaces;
 
-namespace PassportApplication.Services
+namespace PassportApplication.Services.CopyServices
 {
     /// <summary>
     /// Implements IDatabaseService
     /// </summary>
-    public class DatabaseService : IDatabaseService
+    public class SqlBulkCopyService : ICopyService
     {
         private readonly ApplicationContext _applicationContext;
 
@@ -21,7 +21,7 @@ namespace PassportApplication.Services
         /// Constructor of DatabaseService
         /// </summary>
         /// <param name="applicationContext">Application context</param>
-        public DatabaseService(ApplicationContext applicationContext)
+        public SqlBulkCopyService(ApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
         }
@@ -30,7 +30,7 @@ namespace PassportApplication.Services
         /// Updates the database
         /// </summary>
         /// <returns></returns>
-        public async Task UpdateAsync(string FilePath)
+        public async Task CopyAsync(string FilePath)
         {
             IDataReader reader = new CsvReader(FilePath);
             try
@@ -41,13 +41,13 @@ namespace PassportApplication.Services
                     bulkCopy.ColumnMappings.Add(0, 0);
                     bulkCopy.ColumnMappings.Add(1, 1);
                     bulkCopy.BulkCopyTimeout = 0;
-                    bulkCopy.BatchSize = 5000;
+                    bulkCopy.BatchSize = 10000;
 
                     await bulkCopy.WriteToServerAsync(reader);
                 }
             }
-            catch (Exception ex) 
-            { 
+            catch (Exception ex)
+            {
                 Debug.WriteLine(ex);
             }
         }

@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using PassportApplication.Database;
+using PassportApplication.Models;
 
 namespace PassportApplication.Controllers
 {
@@ -9,13 +13,24 @@ namespace PassportApplication.Controllers
     [Route("[controller]")]
     public class PassportsController : ControllerBase
     {
-        private readonly ILogger <PassportsController> _logger;
+        private readonly ApplicationContext _applicationContext;
 
-        public PassportsController(ILogger<PassportsController> logger)
+        public PassportsController(ApplicationContext applicationContext)
         {
-            _logger = logger;
+            _applicationContext = applicationContext;
         }
 
+        [HttpGet]
+        public IActionResult GetPassport(string series, string number)
+        {
+            Passport? passport = _applicationContext.Passports.Find(series, number);
 
+            if (passport == null)
+            {
+                return NotFound();
+            }
+
+            return new OkObjectResult(passport);
+        }
     }
 }

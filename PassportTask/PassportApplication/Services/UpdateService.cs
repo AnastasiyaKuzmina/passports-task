@@ -1,4 +1,5 @@
 ﻿using PassportApplication.Services.Interfaces;
+using System.Diagnostics;
 
 namespace PassportApplication.Services
 {
@@ -10,7 +11,7 @@ namespace PassportApplication.Services
         private readonly IConfiguration _configuration;
         private readonly IFileDownloadService _fileDownloadService;
         private readonly IUnpackService _unpackService;
-        private readonly IDatabaseService _databaseService;
+        private readonly ICopyService _copyService;
 
         /// <summary>
         /// Constructor of UpdateService
@@ -19,12 +20,12 @@ namespace PassportApplication.Services
         /// <param name="unpackService">File unpack service</param>
         /// <param name="parserService">Parser service</param>
         /// <param name="databaseService">Database update service</param>
-        public UpdateService(IConfiguration configuration, IFileDownloadService fileDownloadService, IUnpackService unpackService, IDatabaseService databaseService)
+        public UpdateService(IConfiguration configuration, IFileDownloadService fileDownloadService, IUnpackService unpackService, ICopyService copyService)
         {
             _configuration = configuration;
             _fileDownloadService = fileDownloadService;
             _unpackService = unpackService;
-            _databaseService = databaseService;
+            _copyService = copyService;
         }
 
         /// <summary>
@@ -48,9 +49,9 @@ namespace PassportApplication.Services
             string FilePath = DirectoryPath + ZipPath;
             string ExtractPath = DirectoryPath + ExtractFolder;
 
-            await _fileDownloadService.DownloadFileAsync(FileUrl, DirectoryPath, FilePath);
-            await _unpackService.UnpackAsync(FilePath, ExtractPath);
-            await _databaseService.UpdateAsync(Directory.GetFiles(ExtractPath)[0]);
+            // await _fileDownloadService.DownloadFileAsync(FileUrl, DirectoryPath, FilePath);
+            // await _unpackService.UnpackAsync(FilePath, ExtractPath);
+            await _copyService.CopyAsync(Directory.GetFiles(ExtractPath)[0]);
         }
     }
 }
