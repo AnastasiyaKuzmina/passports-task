@@ -21,9 +21,9 @@ namespace PassportApplication.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetPassport(string series, string number)
+        public IActionResult GetPassport(int id)
         {
-            Passport? passport = _applicationContext.Passports.Find(series, number);
+            Passport? passport = _applicationContext.Passports.Find(id);
 
             if (passport == null)
             {

@@ -21,16 +21,20 @@ namespace PassportApplication.Services.CopyServices
 
         public async Task CopyAsync(string FilePath)
         {
-            string path = Path.GetFullPath(FilePath).Replace("\\", "\\");
+            string path = Path.GetFullPath(FilePath);
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection(_applicationContext.Database.GetConnectionString()))
                 {
                     await connection.OpenAsync();
-                    // NpgsqlCommand command = new NpgsqlCommand(string.Format("COPY public.\"Passports\" FROM \'{0}\' DELIMITER ',' CSV HEADER;", path), connection);
-                    //NpgsqlCommand command = new NpgsqlCommand("COPY public.\"Passports\" FROM \'C:\\Users\\anast\\OneDrive\\Документы\\passports-task\\PassportTask\\PassportApplication\\Files\\File\\Data.csv\' DELIMITER ',' CSV HEADER;", connection);
-                    NpgsqlCommand command = new NpgsqlCommand("COPY public.\"Passports\" FROM \'C:\\pr\\Data.csv\' DELIMITER ',' CSV HEADER;", connection);
-                    command.ExecuteNonQuery();
+                    NpgsqlCommand command1 = new NpgsqlCommand("CREATE TEMP TABLE TempPassports (Id SERIAL PRIMARY KEY, Series VARCHAR(4), Number VARCHAR(6));", connection);
+                    await command1.ExecuteNonQueryAsync();
+                    NpgsqlCommand command2 = new NpgsqlCommand(string.Format("COPY TempPassports (Series, Number) FROM \'{0}\' DELIMITER ',' CSV HEADER;", path), connection);
+                    await command2.ExecuteNonQueryAsync();
+                    NpgsqlCommand command3 = new NpgsqlCommand("INSERT INTO public.\"Passports\" (\"Series\", \"Number\") SELECT Series, Number FROM TempPassports WHERE (Series ~ '\\d{4}' AND Number ~ '\\d{6}');", connection);
+                    await command3.ExecuteNonQueryAsync();
+                    NpgsqlCommand command4 = new NpgsqlCommand("DROP TABLE TempPassports", connection);
+                    await command4.ExecuteNonQueryAsync();
                     connection.Close();
                 }
             }

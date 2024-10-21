@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using PassportApplication.Models;
+using System.Reflection.Emit;
 
 namespace PassportApplication.Database
 {
@@ -39,7 +40,6 @@ namespace PassportApplication.Database
         {
             builder.Property(x => x.Series).HasColumnType("varchar(4)");
             builder.Property(x => x.Number).HasColumnType("varchar(6)");
-            builder.HasKey(p => new { p.Series, p.Number });
         }
 
         public void PassportChangesHistoryConfigure(EntityTypeBuilder<PassportChangesHistory> builder)
