@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Http.HttpResults;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
+
 using PassportApplication.Database;
 using PassportApplication.Models;
 
@@ -21,16 +21,16 @@ namespace PassportApplication.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetPassport(int id)
+        public IActionResult GetPassport(string series, string number)
         {
-            Passport? passport = _applicationContext.Passports.Find(id);
+            Passport? passport = _applicationContext.Passports.FirstOrDefault(p => p.Series == series && p.Number == number);
 
             if (passport == null)
             {
                 return NotFound();
             }
 
-            return new OkObjectResult(passport);
+            return new OkObjectResult(passport.Adapt<PassportDto>());
         }
     }
 }

@@ -7,11 +7,10 @@ using Quartz.Spi;
 using PassportApplication.Database;
 using PassportApplication.Services;
 using PassportApplication.Services.Interfaces;
+using PassportApplication.Services.CopyServices;
 using PassportApplication.Quartz.Jobs;
 
 using QHostedService = PassportApplication.Quartz.QuartzHostedService;
-using PassportApplication.Services.CopyServices;
-using System.Diagnostics;
 
 namespace PassportApplication.Extensions
 {

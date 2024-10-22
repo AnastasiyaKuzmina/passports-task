@@ -1,6 +1,5 @@
 ﻿using Quartz;
 using Quartz.Spi;
-using System.Diagnostics;
 
 namespace PassportApplication.Quartz
 {

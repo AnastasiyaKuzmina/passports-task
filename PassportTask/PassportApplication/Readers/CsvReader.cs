@@ -32,11 +32,20 @@ namespace PassportApplication.Readers
             _streamReader = new StreamReader(FilePath);
         }
 
+        /// <summary>
+        /// Implements IDataReader.GetValue(int i)
+        /// </summary>
+        /// <param name="i">Index of the value</param>
+        /// <returns></returns>
         public object GetValue(int i)
         {
             return _currentLineValues[i];
         }
 
+        /// <summary>
+        /// Implements IDataReader.Read()
+        /// </summary>
+        /// <returns></returns>
         public bool Read()
         {
             if (_streamReader.EndOfStream) return false;
@@ -60,6 +69,9 @@ namespace PassportApplication.Readers
             return !invalidRow || Read();
         }
 
+        /// <summary>
+        /// Implements IDataReader.FieldCount
+        /// </summary>
         public int FieldCount
         {
             get { return 2; }
@@ -75,6 +87,9 @@ namespace PassportApplication.Readers
 
         object IDataRecord.this[int i] => throw new NotImplementedException();
 
+        /// <summary>
+        /// Implements IDataReader.Dispose()
+        /// </summary>
         public void Dispose()
         {
             _streamReader.Close();

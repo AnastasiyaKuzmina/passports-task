@@ -1,6 +1,4 @@
 ﻿using Quartz;
-
-using PassportApplication.Models;
 using PassportApplication.Services.Interfaces;
 
 namespace PassportApplication.Quartz.Jobs

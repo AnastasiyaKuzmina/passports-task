@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PassportApplication.Database;
+﻿using Mapster;
+using MapsterMapper;
+
 using PassportApplication.Extensions;
-using System.Diagnostics;
 
 namespace PassportApplication
 {
@@ -36,6 +36,8 @@ namespace PassportApplication
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddQuartzService(Configuration);
+            services.AddSingleton(TypeAdapterConfig.GlobalSettings);
+            services.AddScoped<IMapper, ServiceMapper>();
         }
 
         /// <summary>

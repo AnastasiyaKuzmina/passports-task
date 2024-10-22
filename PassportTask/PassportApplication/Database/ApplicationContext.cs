@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using PassportApplication.Models;
-using System.Reflection.Emit;
 
 namespace PassportApplication.Database
 {

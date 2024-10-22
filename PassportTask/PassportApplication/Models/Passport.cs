@@ -17,6 +17,5 @@
         /// Passport number
         /// </summary>
         public string Number { get; set; } = null!;
-
     }
 }

@@ -11,14 +11,14 @@ using PassportApplication.Services.Interfaces;
 namespace PassportApplication.Services.CopyServices
 {
     /// <summary>
-    /// Implements IDatabaseService
+    /// Implements ICopyService
     /// </summary>
     public class SqlBulkCopyService : ICopyService
     {
         private readonly ApplicationContext _applicationContext;
 
         /// <summary>
-        /// Constructor of DatabaseService
+        /// Constructor of SqlBulkCopyService
         /// </summary>
         /// <param name="applicationContext">Application context</param>
         public SqlBulkCopyService(ApplicationContext applicationContext)
@@ -27,7 +27,7 @@ namespace PassportApplication.Services.CopyServices
         }
 
         /// <summary>
-        /// Updates the database
+        /// Copies from csv to database
         /// </summary>
         /// <returns></returns>
         public async Task CopyAsync(string FilePath)
@@ -38,12 +38,16 @@ namespace PassportApplication.Services.CopyServices
                 using (var bulkCopy = new SqlBulkCopy(_applicationContext.Database.GetConnectionString(), SqlBulkCopyOptions.TableLock))
                 {
                     bulkCopy.DestinationTableName = "[passportsdb].[dbo].[Passports]";
-                    bulkCopy.ColumnMappings.Add(0, 0);
-                    bulkCopy.ColumnMappings.Add(1, 1);
+                    bulkCopy.ColumnMappings.Add(0, 1);
+                    bulkCopy.ColumnMappings.Add(1, 2);
                     bulkCopy.BulkCopyTimeout = 0;
                     bulkCopy.BatchSize = 10000;
 
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
                     await bulkCopy.WriteToServerAsync(reader);
+                    sw.Stop();
+                    Debug.WriteLine("End! {0}", sw.Elapsed.TotalSeconds);
                 }
             }
             catch (Exception ex)
@@ -51,29 +55,5 @@ namespace PassportApplication.Services.CopyServices
                 Debug.WriteLine(ex);
             }
         }
-
-        //private void Remove(Passport passport)
-        //{
-        //    _applicationContext.Passports.Remove(passport);
-        //    _applicationContext.PassportsChangesHistory.Add(new PassportChangesHistory
-        //    {
-        //        Series = passport.Series,
-        //        Number = passport.Number,
-        //        ChangeType = false,
-        //        Date = DateOnly.FromDateTime(DateTime.Now)
-        //    });
-        //}
-
-        //private void Add(Passport passport)
-        //{
-        //    _applicationContext.Passports.Add(passport);
-        //    _applicationContext.PassportsChangesHistory.Add(new PassportChangesHistory
-        //    {
-        //        Series = passport.Series,
-        //        Number = passport.Number,
-        //        ChangeType = true,
-        //        Date = DateOnly.FromDateTime(DateTime.Now)
-        //    });
-        //}
     }
 }

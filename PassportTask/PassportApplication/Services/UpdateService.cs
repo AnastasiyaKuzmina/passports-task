@@ -1,5 +1,4 @@
 ﻿using PassportApplication.Services.Interfaces;
-using System.Diagnostics;
 
 namespace PassportApplication.Services
 {
