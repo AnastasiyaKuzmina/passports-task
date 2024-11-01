@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
+using Npgsql;
 using PassportApplication.Models;
+
+using System.Diagnostics;
 
 namespace PassportApplication.Database
 {
@@ -24,7 +27,7 @@ namespace PassportApplication.Database
         /// Constructor of ApplicationContext
         /// </summary>
         /// <param name="options">Application context options</param>
-        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
+        public ApplicationContext(DbContextOptions<ApplicationContext> options, IConfiguration configuration) : base(options)
         {
             Database.EnsureCreated();
         }
@@ -37,14 +40,17 @@ namespace PassportApplication.Database
 
         public void PassportConfigure(EntityTypeBuilder<Passport> builder)
         {
-            builder.Property(x => x.Series).HasColumnType("varchar(4)");
-            builder.Property(x => x.Number).HasColumnType("varchar(6)");
+            builder.Property(p => p.Series).HasColumnType("smallint");
+            builder.Property(p => p.Number).HasColumnType("integer");
+            builder.HasKey(p => new { p.Series, p.Number });
+            builder.Property(p => p.Active).HasDefaultValue(true);
+
         }
 
         public void PassportChangesHistoryConfigure(EntityTypeBuilder<PassportChangesHistory> builder)
         {
-            builder.Property(x => x.Series).HasColumnType("varchar(4)");
-            builder.Property(x => x.Number).HasColumnType("varchar(6)");
+            builder.Property(x => x.Series).HasColumnType("smallint");
+            builder.Property(x => x.Number).HasColumnType("integer");
             builder.HasKey(p => p.Id);
             builder.HasIndex(p => p.Date);
         }

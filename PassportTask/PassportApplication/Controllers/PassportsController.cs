@@ -23,7 +23,7 @@ namespace PassportApplication.Controllers
         [HttpGet]
         public IActionResult GetPassport(string series, string number)
         {
-            Passport? passport = _applicationContext.Passports.FirstOrDefault(p => p.Series == series && p.Number == number);
+            Passport? passport = _applicationContext.Passports.Find(series, number);
 
             if (passport == null)
             {

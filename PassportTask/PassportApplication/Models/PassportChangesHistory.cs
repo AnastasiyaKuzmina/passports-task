@@ -12,11 +12,11 @@
         /// <summary>
         /// Passport series
         /// </summary>
-        public string Series { get; set; } = null!;
+        public int Series { get; set; }
         /// <summary>
         /// Passport number
         /// </summary>
-        public string Number { get; set; } = null!;
+        public int Number { get; set; }
         /// <summary>
         /// Type of change: true if add, false if remove
         /// </summary>

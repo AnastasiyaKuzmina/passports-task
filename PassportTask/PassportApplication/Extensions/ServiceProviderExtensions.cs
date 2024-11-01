@@ -18,10 +18,11 @@ namespace PassportApplication.Extensions
     {
         const string firstUpdateMode = "SqlBulkCopy";
         const string secondUpdateMode = "PostgreSqlCopy";
+        const string thirdUpdateMode = "FileSystem";
 
         public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
-            string updateMode = configuration.GetSection("UpdateMode").Value ?? "";
+            string updateMode = configuration.GetSection("Database").GetSection("UpdateMode").Value ?? "";
 
             if (updateMode == firstUpdateMode)
             {
@@ -34,6 +35,11 @@ namespace PassportApplication.Extensions
             {
                 string? NpgConnection = configuration.GetConnectionString("NpgSqlConnection");
                 services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(NpgConnection));
+                return;
+            }
+
+            if (updateMode == thirdUpdateMode)
+            {
                 return;
             }
 
@@ -68,7 +74,7 @@ namespace PassportApplication.Extensions
 
         private static void AddCopy(this IServiceCollection services, IConfiguration configuration)
         {
-            string updateMode = configuration.GetSection("UpdateMode").Value ?? "";
+            string updateMode = configuration.GetSection("Database").GetSection("UpdateMode").Value ?? "";
 
             if (updateMode == firstUpdateMode)
             {
@@ -79,6 +85,12 @@ namespace PassportApplication.Extensions
             if (updateMode == secondUpdateMode)
             {
                 services.AddSingleton<ICopyService, PostgreSqlCopyService>();
+                return;
+            }
+
+            if (updateMode == thirdUpdateMode)
+            {
+                services.AddSingleton<ICopyService, FileSystemCopyService>();
                 return;
             }
 

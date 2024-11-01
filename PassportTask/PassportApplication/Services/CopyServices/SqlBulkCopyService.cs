@@ -4,7 +4,6 @@ using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 
-using PassportApplication.Database;
 using PassportApplication.Readers;
 using PassportApplication.Services.Interfaces;
 
@@ -15,15 +14,15 @@ namespace PassportApplication.Services.CopyServices
     /// </summary>
     public class SqlBulkCopyService : ICopyService
     {
-        private readonly ApplicationContext _applicationContext;
+        private readonly IConfiguration _configuration;
 
         /// <summary>
         /// Constructor of SqlBulkCopyService
         /// </summary>
         /// <param name="applicationContext">Application context</param>
-        public SqlBulkCopyService(ApplicationContext applicationContext)
+        public SqlBulkCopyService(IConfiguration configuration)
         {
-            _applicationContext = applicationContext;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -35,7 +34,7 @@ namespace PassportApplication.Services.CopyServices
             IDataReader reader = new CsvReader(FilePath);
             try
             {
-                using (var bulkCopy = new SqlBulkCopy(_applicationContext.Database.GetConnectionString(), SqlBulkCopyOptions.TableLock))
+                using (var bulkCopy = new SqlBulkCopy(_configuration.GetConnectionString("SqlConnection"), SqlBulkCopyOptions.TableLock))
                 {
                     bulkCopy.DestinationTableName = "[passportsdb].[dbo].[Passports]";
                     bulkCopy.ColumnMappings.Add(0, 1);
