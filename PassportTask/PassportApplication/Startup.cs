@@ -2,6 +2,7 @@
 using MapsterMapper;
 
 using PassportApplication.Extensions;
+using PassportApplication.Options;
 
 namespace PassportApplication
 {
@@ -18,12 +19,14 @@ namespace PassportApplication
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            Settings = new Settings(configuration);
         }
 
         /// <summary>
         /// Builder configuration
         /// </summary>
         public IConfiguration Configuration { get; }
+        public Settings Settings { get; }
 
         /// <summary>
         /// Services setup
@@ -31,11 +34,11 @@ namespace PassportApplication
         /// <param name="services">Instance of an object implementing IServiceCollection</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDatabase(Configuration);
+            services.AddDatabase(Settings);
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            services.AddQuartzService(Configuration);
+            services.AddQuartzService(Settings);
             services.AddSingleton(TypeAdapterConfig.GlobalSettings);
             services.AddScoped<IMapper, ServiceMapper>();
         }

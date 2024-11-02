@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-using Npgsql;
 using PassportApplication.Models;
-
-using System.Diagnostics;
 
 namespace PassportApplication.Database
 {

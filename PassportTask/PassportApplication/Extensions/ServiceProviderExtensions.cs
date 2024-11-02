@@ -5,6 +5,9 @@ using Quartz.Impl;
 using Quartz.Spi;
 
 using PassportApplication.Database;
+using PassportApplication.Options;
+using PassportApplication.Options.Enums;
+using PassportApplication.Options.DatabaseOptions;
 using PassportApplication.Services;
 using PassportApplication.Services.Interfaces;
 using PassportApplication.Services.CopyServices;
@@ -16,39 +19,34 @@ namespace PassportApplication.Extensions
 {
     public static class ServiceProviderExtensions
     {
-        const string firstUpdateMode = "SqlBulkCopy";
-        const string secondUpdateMode = "PostgreSqlCopy";
-        const string thirdUpdateMode = "FileSystem";
-
-        public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
+        public static void AddDatabase(this IServiceCollection services, Settings settings)
         {
-            string updateMode = configuration.GetSection("Database").GetSection("UpdateMode").Value ?? "";
-
-            if (updateMode == firstUpdateMode)
+            switch (settings.DatabaseMode)
             {
-                string? sqlConnection = configuration.GetConnectionString("SqlConnection");
-                services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(sqlConnection));
-                return;
+                case DatabaseMode.FileSystem:
+                    services.AddSingleton(f => settings.DatabaseSettings);
+                    services.AddSingleton<FileSystemDatabase>();
+                    return;
+                case DatabaseMode.PostgreSql:
+                    if (settings.DatabaseSettings is PostgreSqlSettings ps)
+                    {
+                        services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(ps.ConnectionString));
+                        return;
+                    }
+                    throw new Exception();
+                case DatabaseMode.MsSql:
+                    if (settings.DatabaseSettings is MsSqlSettings ms)
+                    {
+                        services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(ms.ConnectionString));
+                        return;
+                    }
+                    throw new Exception();
             }
-
-            if (updateMode == secondUpdateMode)
-            {
-                string? NpgConnection = configuration.GetConnectionString("NpgSqlConnection");
-                services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(NpgConnection));
-                return;
-            }
-
-            if (updateMode == thirdUpdateMode)
-            {
-                return;
-            }
-
-            throw new NotImplementedException();
         }
 
-        public static void AddQuartzService(this IServiceCollection services, IConfiguration configuration)
+        public static void AddQuartzService(this IServiceCollection services, Settings settings)
         {
-            var quartzServiceProvider = GetQuartzServiceProvider(configuration);
+            var quartzServiceProvider = GetQuartzServiceProvider(settings);
 
             services.AddSingleton<IJobFactory>(f => new UpdateDatabaseJobFactory(quartzServiceProvider));
             services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
@@ -57,44 +55,35 @@ namespace PassportApplication.Extensions
             services.AddHostedService<QHostedService>();
         }
 
-        private static ServiceProvider GetQuartzServiceProvider(IConfiguration configuration)
+        private static ServiceProvider GetQuartzServiceProvider(Settings settings)
         {
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddDatabase(configuration);
-            serviceCollection.AddSingleton(c => configuration);
+            serviceCollection.AddDatabase(settings);
+            serviceCollection.AddSingleton(u => settings.UpdateSettings);
             serviceCollection.AddSingleton<UpdateDatabaseJob>();
             serviceCollection.AddSingleton<IFileDownloadService, FileDownloadService>();
-            serviceCollection.AddCopy(configuration);
+            serviceCollection.AddCopy(settings);
             serviceCollection.AddSingleton<IUnpackService, UnpackService>();
             serviceCollection.AddSingleton<IUpdateService, UpdateService>();
 
             return serviceCollection.BuildServiceProvider();
         }
 
-        private static void AddCopy(this IServiceCollection services, IConfiguration configuration)
+        private static void AddCopy(this IServiceCollection services, Settings settings)
         {
-            string updateMode = configuration.GetSection("Database").GetSection("UpdateMode").Value ?? "";
-
-            if (updateMode == firstUpdateMode)
+            switch (settings.DatabaseMode)
             {
-                services.AddSingleton<ICopyService, SqlBulkCopyService>();
-                return;
+                case DatabaseMode.FileSystem:
+                    services.AddSingleton<ICopyService, FileSystemCopyService>();
+                    return;
+                case DatabaseMode.PostgreSql:
+                    services.AddSingleton<ICopyService, PostgreSqlCopyService>();
+                    return;
+                case DatabaseMode.MsSql:
+                    services.AddSingleton<ICopyService, SqlBulkCopyService>();
+                    return;
             }
-
-            if (updateMode == secondUpdateMode)
-            {
-                services.AddSingleton<ICopyService, PostgreSqlCopyService>();
-                return;
-            }
-
-            if (updateMode == thirdUpdateMode)
-            {
-                services.AddSingleton<ICopyService, FileSystemCopyService>();
-                return;
-            }
-
-            throw new NotImplementedException();
         }
 
         private static void AddJob(this IServiceCollection services)
