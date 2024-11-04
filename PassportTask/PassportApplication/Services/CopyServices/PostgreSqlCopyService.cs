@@ -11,15 +11,15 @@ namespace PassportApplication.Services.CopyServices
     /// </summary>
     public class PostgreSqlCopyService : ICopyService
     {
-        private readonly IConfiguration _configuration;
+        private readonly ApplicationContext _applicationContext;
 
         /// <summary>
         /// Constructor of PostgreSqlCopyService
         /// </summary>
         /// <param name="applicationContext">Application context</param>
-        public PostgreSqlCopyService(IConfiguration configuration)
+        public PostgreSqlCopyService(ApplicationContext applicationContext)
         {
-            _configuration = configuration;
+            _applicationContext = applicationContext;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace PassportApplication.Services.CopyServices
         {
             string path = Path.GetFullPath(FilePath);
 
-            using (NpgsqlConnection connection = new NpgsqlConnection(_configuration.GetConnectionString("NpgSqlConnection")))
+            using (NpgsqlConnection connection = new NpgsqlConnection(_applicationContext.Database.GetConnectionString()))
             {
                 await connection.OpenAsync();
                 NpgsqlCommand command1 = new NpgsqlCommand("CREATE TEMP TABLE TempPassports (Series CHAR(4), Number CHAR(6));", connection);
