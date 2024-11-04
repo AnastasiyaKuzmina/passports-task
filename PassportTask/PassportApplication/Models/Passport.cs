@@ -8,11 +8,16 @@
         /// <summary>
         /// Passport series
         /// </summary>
-        public string Series { get; set; } = null!;
+        public short Series { get; set; }
         /// <summary>
         /// Passport number
         /// </summary>
-        public string Number { get; set; } = null!;
+        public int Number { get; set; }
+
+        /// <summary>
+        /// Passport activity
+        /// </summary>
+        public bool Active { get; set; }
 
     }
 }

@@ -1,5 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PassportApplication.Models;
+﻿using Mapster;
+using MapsterMapper;
+
+using PassportApplication.Extensions;
+using PassportApplication.Options;
 
 namespace PassportApplication
 {
@@ -8,6 +11,7 @@ namespace PassportApplication
     /// </summary>
     public class Startup
     {
+
         /// <summary>
         /// Constructor of Setup
         /// </summary>
@@ -15,32 +19,35 @@ namespace PassportApplication
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            Settings = new Settings(configuration);
         }
 
         /// <summary>
         /// Builder configuration
         /// </summary>
         public IConfiguration Configuration { get; }
+        public Settings Settings { get; }
 
         /// <summary>
         /// Services setup
         /// </summary>
-        /// <param name="services"></param>
+        /// <param name="services">Instance of an object implementing IServiceCollection</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            string? connection = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connection));
-
+            services.AddDatabase(Settings);
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+            services.AddQuartzService(Settings);
+            services.AddSingleton(TypeAdapterConfig.GlobalSettings);
+            services.AddScoped<IMapper, ServiceMapper>();
         }
 
         /// <summary>
         /// Usage setup
         /// </summary>
-        /// <param name="app"></param>
-        /// <param name="env"></param>
+        /// <param name="app">Instance of an object implementing IApplicationBuilder</param>
+        /// <param name="env">Instance of an object implementing IWebHostEnvironment</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
