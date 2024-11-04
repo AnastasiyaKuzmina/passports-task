@@ -2,6 +2,7 @@
 using PassportApplication.Options.DatabaseOptions;
 using PassportApplication.Options.UpdateOptions;
 using PassportApplication.Options.DatabaseOptions.Interfaces;
+using PassportApplication.Options.FormatOptions;
 
 namespace PassportApplication.Options
 {
@@ -14,14 +15,21 @@ namespace PassportApplication.Options
         /// Database mode
         /// </summary>
         public DatabaseMode DatabaseMode { get; }
+
         /// <summary>
         /// Database settings 
         /// </summary>
         public IDatabaseSettings DatabaseSettings { get; }
+
         /// <summary>
         /// Update settings
         /// </summary>
         public UpdateSettings UpdateSettings { get; }
+
+        /// <summary>
+        /// Format settings
+        /// </summary>
+        public FormatSettings FormatSettings { get; }
 
         /// <summary>
         /// Constructor of Settings
@@ -32,6 +40,7 @@ namespace PassportApplication.Options
             DatabaseMode = GetDatabaseMode(configuration);
             DatabaseSettings = GetDatabaseSettings(configuration);
             UpdateSettings = new UpdateSettings(configuration);
+            FormatSettings = new FormatSettings();
         }
 
         private DatabaseMode GetDatabaseMode(IConfiguration configuration)

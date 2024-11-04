@@ -1,8 +1,7 @@
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
-using PassportApplication.Database;
 using PassportApplication.Models;
+using PassportApplication.Repositories.Interfaces;
 
 namespace PassportApplication.Controllers
 {
@@ -13,11 +12,11 @@ namespace PassportApplication.Controllers
     [Route("[controller]")]
     public class PassportsController : ControllerBase
     {
-        private readonly ApplicationContext _applicationContext;
+        private readonly IRepository _repository;
 
-        public PassportsController(ApplicationContext applicationContext)
+        public PassportsController(IRepository repository)
         {
-            _applicationContext = applicationContext;
+            _repository = repository;
         }
 
         /// <summary>
@@ -29,14 +28,14 @@ namespace PassportApplication.Controllers
         [HttpGet]
         public IActionResult GetPassportActivity(string series, string number)
         {
-            Passport? passport = _applicationContext.Passports.Find(series, number);
+            PassportDto? passportDto = _repository.GetPassportActivity(series, number);
 
-            if (passport == null)
+            if (passportDto == null)
             {
                 return NotFound();
             }
 
-            return new OkObjectResult(passport.Adapt<PassportDto>());
+            return new OkObjectResult(passportDto);
         }
     }
 }

@@ -37,7 +37,7 @@ namespace PassportApplication.Services
         {
             //await _fileDownloadService.DownloadFileAsync(_updateSettings.FileUrl, _updateSettings.DirectoryPath, _updateSettings.FilePath);
             //await _unpackService.UnpackAsync(_updateSettings.FilePath, _updateSettings.ExtractPath);
-            //await _copyService.CopyAsync(Directory.GetFiles(_updateSettings.ExtractPath)[0]);
+            await _copyService.CopyAsync(Directory.GetFiles(_updateSettings.ExtractPath)[0]);
         }
     }
 }

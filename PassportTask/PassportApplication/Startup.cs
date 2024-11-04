@@ -39,6 +39,8 @@ namespace PassportApplication
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddQuartzService(Settings);
+            services.AddSingleton(s => Settings.FormatSettings);
+            services.AddRepository(Settings);
             services.AddSingleton(TypeAdapterConfig.GlobalSettings);
             services.AddScoped<IMapper, ServiceMapper>();
         }

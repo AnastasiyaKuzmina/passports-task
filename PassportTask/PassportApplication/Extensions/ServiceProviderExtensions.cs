@@ -14,6 +14,8 @@ using PassportApplication.Services.CopyServices;
 using PassportApplication.Quartz.Jobs;
 
 using QHostedService = PassportApplication.Quartz.QuartzHostedService;
+using PassportApplication.Repositories.Interfaces;
+using PassportApplication.Repositories;
 
 namespace PassportApplication.Extensions
 {
@@ -73,6 +75,21 @@ namespace PassportApplication.Extensions
             services.AddJob();
             services.AddTrigger();
             services.AddHostedService<QHostedService>();
+        }
+
+        public static void AddRepository(this IServiceCollection services, Settings settings)
+        {
+            switch (settings.DatabaseMode)
+            {
+                case DatabaseMode.FileSystem:
+                    services.AddSingleton<IRepository, FileSystemRepository>();
+                    return;
+
+                case DatabaseMode.PostgreSql:
+                case DatabaseMode.MsSql:
+                    services.AddSingleton<IRepository, SqlRepository>();
+                    return;
+            }
         }
 
         private static ServiceProvider GetQuartzServiceProvider(Settings settings)
