@@ -1,4 +1,4 @@
-﻿namespace PassportApplication.Models
+﻿namespace PassportApplication.Models.Dto
 {
     /// <summary>
     /// Passport DTO class

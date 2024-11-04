@@ -31,20 +31,21 @@ namespace PassportApplication.Database
             if (Directory.Exists(FileSystemSettings.DatabasePath) == false) 
             {
                 Directory.CreateDirectory(FileSystemSettings.DatabasePath);
-                File.Create(FileSystemSettings.PassportsHistoryPath);
+                Directory.CreateDirectory(FileSystemSettings.PassportsHistoryPath);
                 InitializePassportsFile();
-
+                File.Copy(FileSystemSettings.PassportsTemplatePath, FileSystemSettings.PassportsPath);
                 return;
             }
 
-            if (File.Exists(FileSystemSettings.PassportsPath) == false)
+            if (File.Exists(FileSystemSettings.PassportsTemplatePath) == false)
             {
                 InitializePassportsFile();
             }
 
-            if (File.Exists(FileSystemSettings.PassportsHistoryPath) == false)
+            if ((File.Exists(FileSystemSettings.PassportsPath) == false) ||
+                (Directory.Exists(FileSystemSettings.PassportsHistoryPath) == false))
             {
-                File.Create(FileSystemSettings.PassportsHistoryPath);
+                throw new Exception();
             }
         }
 
@@ -53,7 +54,7 @@ namespace PassportApplication.Database
             Debug.WriteLine("Start Initialization");
             Stopwatch sw = Stopwatch.StartNew();
             
-            using (FileStream fstream = new FileStream(FileSystemSettings.PassportsPath, FileMode.Create))
+            using (FileStream fstream = new FileStream(FileSystemSettings.PassportsTemplatePath, FileMode.Create))
             {
                 for (long j = 0; j < bytesNumber; j++)
                 {

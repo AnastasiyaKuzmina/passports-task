@@ -11,14 +11,26 @@ namespace PassportApplication.Options.DatabaseOptions
         /// Database path
         /// </summary>
         public string DatabasePath { get; set; }
+
         /// <summary>
         /// Passports path
         /// </summary>
         public string PassportsPath { get; set; }
+
+        /// <summary>
+        /// Passports template path
+        /// </summary>
+        public string PassportsTemplatePath { get; set; }
+
         /// <summary>
         /// Passports history path
         /// </summary>
         public string PassportsHistoryPath { get; set; }
+
+        /// <summary>
+        /// File name format
+        /// </summary>
+        public string FileNameFormat { get; set; }
 
         /// <summary>
         /// Constructor of FileSystemSettings
@@ -28,7 +40,9 @@ namespace PassportApplication.Options.DatabaseOptions
         {
             DatabasePath = GetDatabasePath(configuration);
             PassportsPath = GetPassportsPath(configuration);
+            PassportsTemplatePath = GetPassportsTemplatePath(configuration);
             PassportsHistoryPath = GetPassportsHistoryPath(configuration);
+            FileNameFormat = GetFileNameFormat(configuration);
         }
 
         private string GetDatabasePath(IConfiguration configuration)
@@ -48,9 +62,25 @@ namespace PassportApplication.Options.DatabaseOptions
             return Path.Combine(DatabasePath, path);
         }
 
+        private string GetPassportsTemplatePath(IConfiguration configuration)
+        {
+            var path = configuration.GetSection("FileSystemDatabase").GetSection("PassportsTemplate").Value;
+            if (path == null) throw new NotImplementedException();
+
+            return Path.Combine(DatabasePath, path);
+        }
+
         private string GetPassportsHistoryPath(IConfiguration configuration)
         {
             var path = configuration.GetSection("FileSystemDatabase").GetSection("PassportsHistory").Value;
+            if (path == null) throw new NotImplementedException();
+
+            return Path.Combine(DatabasePath, path);
+        }
+
+        private string GetFileNameFormat(IConfiguration configuration)
+        {
+            var path = configuration.GetSection("FileSystemDatabase").GetSection("FileNameFormat").Value;
             if (path == null) throw new NotImplementedException();
 
             return Path.Combine(DatabasePath, path);

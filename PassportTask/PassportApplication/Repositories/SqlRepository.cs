@@ -1,9 +1,9 @@
 ﻿using Mapster;
 using PassportApplication.Database;
 using PassportApplication.Models;
+using PassportApplication.Models.Dto;
 using PassportApplication.Options.FormatOptions;
 using PassportApplication.Repositories.Interfaces;
-using System.Text.RegularExpressions;
 
 namespace PassportApplication.Repositories
 {
@@ -28,6 +28,16 @@ namespace PassportApplication.Repositories
 
             Passport? passport = _applicationContext.Passports.Find(short.Parse(series), int.Parse(number));
             return passport.Adapt<PassportDto>();
+        }
+
+        public List<PassportChangesDto> GetPassportsChangesForDate(short day, short month, short year)
+        {
+            throw new NotImplementedException();
+        }
+
+        List<PassportActivityHistoryDto>? IRepository.GetPassportHistory(string series, string number)
+        {
+            throw new NotImplementedException();
         }
     }
 }

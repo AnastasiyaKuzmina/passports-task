@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-
-using PassportApplication.Models;
+using PassportApplication.Models.Dto;
 using PassportApplication.Repositories.Interfaces;
 
 namespace PassportApplication.Controllers
@@ -26,16 +25,45 @@ namespace PassportApplication.Controllers
         /// <param name="number">Passport number</param>
         /// <returns></returns>
         [HttpGet]
+        [Route("GetPassportActivity")]
         public IActionResult GetPassportActivity(string series, string number)
         {
-            PassportDto? passportDto = _repository.GetPassportActivity(series, number);
+            PassportDto? result = _repository.GetPassportActivity(series, number);
 
-            if (passportDto == null)
+            if (result == null)
             {
                 return NotFound();
             }
 
-            return new OkObjectResult(passportDto);
+            return new OkObjectResult(result);
+        }
+
+        [HttpGet]
+        [Route("GetPassportsChangesForDate")]
+        public IActionResult GetPassportsChangesForDate(short day, short month, short year)
+        {
+            List<PassportChangesDto>? result = _repository.GetPassportsChangesForDate(day, month, year);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return new OkObjectResult(result);
+        }
+
+        [HttpGet]
+        [Route("GetPassportHistory")]
+        public IActionResult GetPassportHistory(string series, string number)
+        {
+            List<PassportActivityHistoryDto>? result = _repository.GetPassportHistory(series, number);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return new OkObjectResult(result);
         }
     }
 }

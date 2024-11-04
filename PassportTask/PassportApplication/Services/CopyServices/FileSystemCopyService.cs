@@ -42,7 +42,9 @@ namespace PassportApplication.Services.CopyServices
 
             await Task.Run(() =>
             {
-                using (FileStream fstream = new FileStream(_fileSystemDatabase.FileSystemSettings.PassportsPath, FileMode.Open))
+                string newFilePath = Path.Combine(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath, DateTime.Now.ToString("dd-MM-yyyy") + ".txt");
+                File.Copy(_fileSystemDatabase.FileSystemSettings.PassportsTemplatePath, newFilePath);
+                using (FileStream fstream = new FileStream(newFilePath, FileMode.Open))
                 {
                     using (StreamReader sr = new StreamReader(FilePath))
                     {
@@ -79,6 +81,7 @@ namespace PassportApplication.Services.CopyServices
                         }
                     }
                 }
+                File.Copy(newFilePath, _fileSystemDatabase.FileSystemSettings.PassportsPath, true);
             });
 
             sw.Stop();
