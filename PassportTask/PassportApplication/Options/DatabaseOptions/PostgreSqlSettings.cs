@@ -2,10 +2,20 @@
 
 namespace PassportApplication.Options.DatabaseOptions
 {
+    /// <summary>
+    /// Implements IDatabaseSettings
+    /// </summary>
     public class PostgreSqlSettings : IDatabaseSettings
     {
+        /// <summary>
+        /// Connection string
+        /// </summary>
         public string ConnectionString { get; set; }
 
+        /// <summary>
+        /// Constructor of PostgreSqlSettings
+        /// </summary>
+        /// <param name="configuration"></param>
         public PostgreSqlSettings(IConfiguration configuration)
         {
             ConnectionString = GetConnectionString(configuration);

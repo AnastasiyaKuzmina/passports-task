@@ -1,4 +1,6 @@
-﻿using PassportApplication.Services.Interfaces;
+﻿using PassportApplication.Options.UpdateOptions;
+using PassportApplication.Services.Interfaces;
+using System.Diagnostics;
 
 namespace PassportApplication.Services
 {
@@ -7,7 +9,7 @@ namespace PassportApplication.Services
     /// </summary>
     public class UpdateService : IUpdateService
     {
-        private readonly IConfiguration _configuration;
+        private readonly UpdateSettings _updateSettings;
         private readonly IFileDownloadService _fileDownloadService;
         private readonly IUnpackService _unpackService;
         private readonly ICopyService _copyService;
@@ -19,9 +21,9 @@ namespace PassportApplication.Services
         /// <param name="unpackService">File unpack service</param>
         /// <param name="parserService">Parser service</param>
         /// <param name="databaseService">Database update service</param>
-        public UpdateService(IConfiguration configuration, IFileDownloadService fileDownloadService, IUnpackService unpackService, ICopyService copyService)
+        public UpdateService(UpdateSettings updateSettings, IFileDownloadService fileDownloadService, IUnpackService unpackService, ICopyService copyService)
         {
-            _configuration = configuration;
+            _updateSettings = updateSettings;
             _fileDownloadService = fileDownloadService;
             _unpackService = unpackService;
             _copyService = copyService;
@@ -33,24 +35,9 @@ namespace PassportApplication.Services
         /// <returns></returns>
         public async Task UpdateAsync()
         {
-            string? FileUrl = _configuration.GetSection("DatabaseUpdate").GetSection("FileUrl").Value;
-            if (FileUrl == null) return;
-
-            string? DirectoryPath = _configuration.GetSection("DatabaseUpdate").GetSection("DirectoryPath").Value;
-            if (DirectoryPath == null) return;
-
-            string? ZipPath = _configuration.GetSection("DatabaseUpdate").GetSection("ZipPath").Value;
-            if (ZipPath == null) return;
-
-            string? ExtractFolder = _configuration.GetSection("DatabaseUpdate").GetSection("ExtractPath").Value;
-            if (ExtractFolder == null) return;
-
-            string FilePath = DirectoryPath + ZipPath;
-            string ExtractPath = DirectoryPath + ExtractFolder;
-
-            // await _fileDownloadService.DownloadFileAsync(FileUrl, DirectoryPath, FilePath);
-            // await _unpackService.UnpackAsync(FilePath, ExtractPath);
-            await _copyService.CopyAsync(Directory.GetFiles(ExtractPath)[0]);
+            //await _fileDownloadService.DownloadFileAsync(_updateSettings.FileUrl, _updateSettings.DirectoryPath, _updateSettings.FilePath);
+            //await _unpackService.UnpackAsync(_updateSettings.FilePath, _updateSettings.ExtractPath);
+            //await _copyService.CopyAsync(Directory.GetFiles(_updateSettings.ExtractPath)[0]);
         }
     }
 }

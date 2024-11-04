@@ -2,12 +2,28 @@
 
 namespace PassportApplication.Options.DatabaseOptions
 {
+    /// <summary>
+    /// Implements IDatabaseSettings
+    /// </summary>
     public class FileSystemSettings : IDatabaseSettings
     {
+        /// <summary>
+        /// Database path
+        /// </summary>
         public string DatabasePath { get; set; }
+        /// <summary>
+        /// Passports path
+        /// </summary>
         public string PassportsPath { get; set; }
+        /// <summary>
+        /// Passports history path
+        /// </summary>
         public string PassportsHistoryPath { get; set; }
 
+        /// <summary>
+        /// Constructor of FileSystemSettings
+        /// </summary>
+        /// <param name="configuration">Application configuration</param>
         public FileSystemSettings(IConfiguration configuration)
         {
             DatabasePath = GetDatabasePath(configuration);

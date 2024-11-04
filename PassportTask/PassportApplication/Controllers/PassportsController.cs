@@ -20,8 +20,14 @@ namespace PassportApplication.Controllers
             _applicationContext = applicationContext;
         }
 
+        /// <summary>
+        /// Gets passport's activity
+        /// </summary>
+        /// <param name="series">Passport series</param>
+        /// <param name="number">Passport number</param>
+        /// <returns></returns>
         [HttpGet]
-        public IActionResult GetPassport(string series, string number)
+        public IActionResult GetPassportActivity(string series, string number)
         {
             Passport? passport = _applicationContext.Passports.Find(series, number);
 

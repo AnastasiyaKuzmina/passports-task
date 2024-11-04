@@ -1,20 +1,34 @@
 ﻿using System.Text.RegularExpressions;
+using System.Diagnostics;
 using PassportApplication.Services.Interfaces;
+using PassportApplication.Database;
 
 namespace PassportApplication.Services.CopyServices
 {
+    /// <summary>
+    /// Implements ICopyService
+    /// </summary>
     public class FileSystemCopyService : ICopyService
     {
         private readonly Regex seriesTemplate = new Regex(@"\d{4}");
         private readonly Regex numberTemplate = new Regex(@"\d{6}");
 
-        private readonly IConfiguration _configuration;
+        private readonly FileSystemDatabase _fileSystemDatabase;
 
-        public FileSystemCopyService(IConfiguration configuration)
+        /// <summary>
+        /// Constructor of FileSystemCopyService
+        /// </summary>
+        /// <param name="fileSystemDatabase">File system database</param>
+        public FileSystemCopyService(FileSystemDatabase fileSystemDatabase)
         {
-            _configuration = configuration;
+            _fileSystemDatabase = fileSystemDatabase;
         }
 
+        /// <summary>
+        /// Copies from csv to database
+        /// </summary>
+        /// <param name="FilePath">File path</param>
+        /// <returns></returns>
         public async Task CopyAsync(string FilePath)
         {
             long symbol;
@@ -22,26 +36,26 @@ namespace PassportApplication.Services.CopyServices
             char[] binaryNumber;
             byte[] bytesToRead = new byte[1];
 
-            string? passportsPath = _configuration.GetSection("PassportsPath").Value;
-
-            if (passportsPath == null)
-            {
-                return;
-            }
-
-            //Stopwatch sw = new Stopwatch();
-            //sw.Start();
+            Debug.WriteLine("Start Copy!");
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
             await Task.Run(() =>
             {
-                using (FileStream fstream = new FileStream(passportsPath, FileMode.Open))
+                using (FileStream fstream = new FileStream(_fileSystemDatabase.FileSystemSettings.PassportsPath, FileMode.Open))
                 {
                     using (StreamReader sr = new StreamReader(FilePath))
                     {
+                        int i = 0;
                         string? line;
                         string[] lines;
                         while ((line = sr.ReadLine()) != null)
                         {
+                            i++;
+                            if (i % 1000000 == 0)
+                            {
+                                Debug.WriteLine(i);
+                            }
                             lines = line.Split(',');
 
                             if ((seriesTemplate.IsMatch(lines[0]) == false) || (numberTemplate.IsMatch(lines[1]) == false))
@@ -66,9 +80,9 @@ namespace PassportApplication.Services.CopyServices
                     }
                 }
             });
-            
-            //sw.Stop();
-            //Console.WriteLine(sw.Elapsed.TotalSeconds);
+
+            sw.Stop();
+            Debug.WriteLine("End Copy {0}", sw.Elapsed.TotalSeconds);
         }
     }
 }

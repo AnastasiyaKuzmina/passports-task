@@ -3,13 +3,23 @@ using System.Diagnostics;
 
 namespace PassportApplication.Database
 {
+    /// <summary>
+    /// File system database management class
+    /// </summary>
     public class FileSystemDatabase
     {
         const long bytesNumber = 1250000000;
         private static readonly byte[] initializeByte = { 255 };
 
+        /// <summary>
+        /// File system settings
+        /// </summary>
         public FileSystemSettings FileSystemSettings { get; set; }
 
+        /// <summary>
+        /// Constructor of FileSystemDatabase
+        /// </summary>
+        /// <param name="fileSystemSettings">File system settings</param>
         public FileSystemDatabase(FileSystemSettings fileSystemSettings) 
         {
             FileSystemSettings = fileSystemSettings;

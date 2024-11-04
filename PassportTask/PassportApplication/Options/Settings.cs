@@ -5,12 +5,28 @@ using PassportApplication.Options.DatabaseOptions.Interfaces;
 
 namespace PassportApplication.Options
 {
+    /// <summary>
+    /// Settings class
+    /// </summary>
     public class Settings
     {
+        /// <summary>
+        /// Database mode
+        /// </summary>
         public DatabaseMode DatabaseMode { get; }
+        /// <summary>
+        /// Database settings 
+        /// </summary>
         public IDatabaseSettings DatabaseSettings { get; }
+        /// <summary>
+        /// Update settings
+        /// </summary>
         public UpdateSettings UpdateSettings { get; }
 
+        /// <summary>
+        /// Constructor of Settings
+        /// </summary>
+        /// <param name="configuration"></param>
         public Settings(IConfiguration configuration) 
         { 
             DatabaseMode = GetDatabaseMode(configuration);

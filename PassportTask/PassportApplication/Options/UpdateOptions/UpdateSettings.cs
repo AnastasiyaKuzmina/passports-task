@@ -2,13 +2,32 @@
 
 namespace PassportApplication.Options.UpdateOptions
 {
+    /// <summary>
+    /// Update settings class
+    /// </summary>
     public class UpdateSettings
     {
+        /// <summary>
+        /// File URL to download
+        /// </summary>
         public string FileUrl { get; set; }
+        /// <summary>
+        /// Directory path to download
+        /// </summary>
         public string DirectoryPath { get; set; }
+        /// <summary>
+        /// File path to download
+        /// </summary>
         public string FilePath { get; set; }
+        /// <summary>
+        /// Extract path
+        /// </summary>
         public string ExtractPath { get; set; }
 
+        /// <summary>
+        /// Constructor of UpdateSettings
+        /// </summary>
+        /// <param name="configuration"></param>
         public UpdateSettings(IConfiguration configuration)
         {
             FileUrl = GetFileUrl(configuration);

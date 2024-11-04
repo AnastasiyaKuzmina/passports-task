@@ -17,16 +17,30 @@ using QHostedService = PassportApplication.Quartz.QuartzHostedService;
 
 namespace PassportApplication.Extensions
 {
+    /// <summary>
+    /// Extensions class for service provider
+    /// </summary>
     public static class ServiceProviderExtensions
     {
+        /// <summary>
+        /// Adds database
+        /// </summary>
+        /// <param name="services">IServiceCollection</param>
+        /// <param name="settings">Settings</param>
+        /// <exception cref="Exception"></exception>
         public static void AddDatabase(this IServiceCollection services, Settings settings)
         {
             switch (settings.DatabaseMode)
             {
                 case DatabaseMode.FileSystem:
-                    services.AddSingleton(f => settings.DatabaseSettings);
-                    services.AddSingleton<FileSystemDatabase>();
-                    return;
+                    if (settings.DatabaseSettings is FileSystemSettings fs)
+                    {
+                        services.AddSingleton(f => fs);
+                        services.AddSingleton<FileSystemDatabase>();
+                        return;
+                    }
+                    throw new Exception();
+
                 case DatabaseMode.PostgreSql:
                     if (settings.DatabaseSettings is PostgreSqlSettings ps)
                     {
@@ -34,6 +48,7 @@ namespace PassportApplication.Extensions
                         return;
                     }
                     throw new Exception();
+
                 case DatabaseMode.MsSql:
                     if (settings.DatabaseSettings is MsSqlSettings ms)
                     {
@@ -44,6 +59,11 @@ namespace PassportApplication.Extensions
             }
         }
 
+        /// <summary>
+        /// Adds Quartz 
+        /// </summary>
+        /// <param name="services">IServiceCollection</param>
+        /// <param name="settings">Settings</param>
         public static void AddQuartzService(this IServiceCollection services, Settings settings)
         {
             var quartzServiceProvider = GetQuartzServiceProvider(settings);
