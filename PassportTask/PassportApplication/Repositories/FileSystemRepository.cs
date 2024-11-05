@@ -82,7 +82,7 @@ namespace PassportApplication.Repositories
         {
             DateOnly date = new DateOnly(year, month, day);
             string filePath = Path.Combine(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath, 
-                                            date.ToString(_fileSystemDatabase.FileSystemSettings.FileNameFormat));
+                                            date.ToString(_fileSystemDatabase.FileSystemSettings.FileNameFormat) + ".txt");
 
             if (File.Exists(filePath) == false) 
             {
@@ -96,9 +96,9 @@ namespace PassportApplication.Repositories
             List<PassportChangesDto> result = new List<PassportChangesDto>();
 
             string previousFilePath = Path.Combine(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath, 
-                                                    date.AddDays(-1).ToString(_fileSystemDatabase.FileSystemSettings.FileNameFormat));
+                                                    date.AddDays(-1).ToString(_fileSystemDatabase.FileSystemSettings.FileNameFormat) + ".txt");
 
-            if (File.Exists(filePath) == false)
+            if (File.Exists(previousFilePath) == false)
             {
                 previousFilePath = _fileSystemDatabase.FileSystemSettings.PassportsTemplatePath;
             }
@@ -143,7 +143,7 @@ namespace PassportApplication.Repositories
             char[] binaryNumber1 = Convert.ToString(bytesToRead1[0], 2).PadLeft(8, '0').ToCharArray();
             char[] binaryNumber2 = Convert.ToString(bytesToRead2[0], 2).PadLeft(8, '0').ToCharArray();
 
-            for (int i = 0; i <= 8; i++)
+            for (int i = 0; i < 8; i++)
             {
                 if (binaryNumber1[i] == binaryNumber2[i])
                 {

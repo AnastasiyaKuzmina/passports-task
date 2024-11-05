@@ -80,10 +80,10 @@ namespace PassportApplication.Options.DatabaseOptions
 
         private string GetFileNameFormat(IConfiguration configuration)
         {
-            var path = configuration.GetSection("FileSystemDatabase").GetSection("FileNameFormat").Value;
-            if (path == null) throw new NotImplementedException();
+            var format = configuration.GetSection("FileSystemDatabase").GetSection("FileNameFormat").Value;
+            if (format == null) throw new NotImplementedException();
 
-            return Path.Combine(DatabasePath, path);
+            return format;
         }
     }
 }
