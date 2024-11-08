@@ -37,9 +37,9 @@ namespace PassportApplication.Results
             } 
             else
             {
-                return new ObjectResult(Error)
+                return new ObjectResult(Error.Message)
                 {
-                    DeclaredType = typeof(Error),
+                    DeclaredType = typeof(string),
                     StatusCode = StatusCode
                 };
             }
@@ -69,6 +69,5 @@ namespace PassportApplication.Results
                     throw new NotImplementedException();
             }
         }
-
     }
 }
