@@ -27,12 +27,22 @@ namespace PassportApplication.Results
 
         public ActionResult<T> ToActionResult()
         {
-            return new ObjectResult(Value)
+            if (Error.ErrorType == ErrorType.None)
             {
-                DeclaredType = typeof(T),
-                StatusCode = StatusCode
-
-            };
+                return new ObjectResult(Value)
+                {
+                    DeclaredType = typeof(T),
+                    StatusCode = StatusCode
+                };
+            } 
+            else
+            {
+                return new ObjectResult(Error)
+                {
+                    DeclaredType = typeof(Error),
+                    StatusCode = StatusCode
+                };
+            }
         }
 
         public static implicit operator Result<T>(T? result)
@@ -51,6 +61,10 @@ namespace PassportApplication.Results
             {
                 case ErrorType.None:
                     return StatusCodes.Status200OK;
+                case ErrorType.FileDoesNotExist:
+                    return StatusCodes.Status500InternalServerError;
+                case ErrorType.WrongPassportFormat:
+                    return StatusCodes.Status400BadRequest;
                 default:
                     throw new NotImplementedException();
             }

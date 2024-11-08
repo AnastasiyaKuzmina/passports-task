@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using PassportApplication.Services.Interfaces;
 using PassportApplication.Database;
+using System.Diagnostics.Eventing.Reader;
 
 namespace PassportApplication.Services.CopyServices
 {
@@ -42,9 +43,20 @@ namespace PassportApplication.Services.CopyServices
 
             await Task.Run(() =>
             {
-                string newFilePath = Path.Combine(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath, DateTime.Now.ToString("dd-MM-yyyy") + ".txt");
-                File.Copy(_fileSystemDatabase.FileSystemSettings.PassportsTemplatePath, newFilePath);
-                using (FileStream fstream = new FileStream(newFilePath, FileMode.Open))
+                string writeFilePath;
+
+                if (_fileSystemDatabase.FileSystemSettings.CurrentPassportsPath)
+                {
+                    writeFilePath = _fileSystemDatabase.FileSystemSettings.PassportsPath2;
+                } 
+                else
+                {
+                    writeFilePath = _fileSystemDatabase.FileSystemSettings.PassportsPath1;
+                }
+                
+                File.Copy(_fileSystemDatabase.FileSystemSettings.PassportsTemplatePath, writeFilePath, true);
+
+                using (FileStream fstream = new FileStream(writeFilePath, FileMode.Open))
                 {
                     using (StreamReader sr = new StreamReader(FilePath))
                     {
@@ -81,14 +93,20 @@ namespace PassportApplication.Services.CopyServices
                         }
                     }
                 }
-                if (_fileSystemDatabase.FileSystemSettings.CurrentPassportsPath == _fileSystemDatabase.FileSystemSettings.PassportsPath1)
+
+                string newFilePath = Path.Combine(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath, 
+                                                    DateTime.Now.ToString(_fileSystemDatabase.FileSystemSettings.FileNameFormat) + ".txt");
+                File.Copy(writeFilePath, newFilePath);
+
+                if (_fileSystemDatabase.FileSystemSettings.CurrentPassportsPath)
                 {
-                    File.Copy(newFilePath, _fileSystemDatabase.FileSystemSettings.PassportsPath2, true);
-                    _fileSystemDatabase.FileSystemSettings.CurrentPassportsPath = _fileSystemDatabase.FileSystemSettings.PassportsPath2;
-                } else
+                    _fileSystemDatabase.FileSystemSettings.CurrentPassportsPath = false;
+                    File.Delete(_fileSystemDatabase.FileSystemSettings.PassportsPath1);
+                }
+                else
                 {
-                    File.Copy(newFilePath, _fileSystemDatabase.FileSystemSettings.PassportsPath1, true);
-                    _fileSystemDatabase.FileSystemSettings.CurrentPassportsPath = _fileSystemDatabase.FileSystemSettings.PassportsPath1;
+                    _fileSystemDatabase.FileSystemSettings.CurrentPassportsPath = true;
+                    File.Delete(_fileSystemDatabase.FileSystemSettings.PassportsPath2);
                 }
             });
 

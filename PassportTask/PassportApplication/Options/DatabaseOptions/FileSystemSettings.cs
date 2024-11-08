@@ -13,9 +13,9 @@ namespace PassportApplication.Options.DatabaseOptions
         public string DatabasePath { get; set; }
 
         /// <summary>
-        /// Current passports path
+        /// Current passports path: true if PassportsPath, false if PassportsPath2
         /// </summary>
-        public string CurrentPassportsPath { get; set; }
+        public bool CurrentPassportsPath { get; set; }
 
         /// <summary>
         /// Passports path 1

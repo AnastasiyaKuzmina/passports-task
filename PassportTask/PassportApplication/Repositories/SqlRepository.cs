@@ -1,9 +1,12 @@
 ﻿using Mapster;
 using PassportApplication.Database;
+using PassportApplication.Errors.Enums;
 using PassportApplication.Models;
 using PassportApplication.Models.Dto;
 using PassportApplication.Options.FormatOptions;
 using PassportApplication.Repositories.Interfaces;
+using PassportApplication.Results;
+using PassportApplication.Errors;
 
 namespace PassportApplication.Repositories
 {
@@ -18,26 +21,28 @@ namespace PassportApplication.Repositories
             _formatSettings = formatSettings;
         }
 
-        public PassportDto? GetPassportActivity(string series, string number)
+        public async Task<Result<PassportDto>> GetPassportActivityAsync(string series, string number)
         {
             if ((_formatSettings.SeriesTemplate.IsMatch(series) == false) 
                 || (_formatSettings.NumberTemplate.IsMatch(number) == false))
             {
-                return null;
+                return new Result<PassportDto>(new Error(ErrorType.WrongPassportFormat, "Wrong passport format"));
             }
 
-            Passport? passport = _applicationContext.Passports.Find(short.Parse(series), int.Parse(number));
+            Passport? passport = await _applicationContext.Passports.FindAsync(short.Parse(series), int.Parse(number));
             return passport.Adapt<PassportDto>();
         }
 
-        public List<PassportChangesDto> GetPassportsChangesForDate(short day, short month, short year)
+        public Task<Result<List<PassportActivityHistoryDto>>> GetPassportHistoryAsync(string series, string number)
         {
             throw new NotImplementedException();
         }
 
-        List<PassportActivityHistoryDto>? IRepository.GetPassportHistory(string series, string number)
+        public Task<Result<List<PassportChangesDto>>> GetPassportsChangesForDateAsync(short day, short month, short year)
         {
             throw new NotImplementedException();
         }
+
+        
     }
 }

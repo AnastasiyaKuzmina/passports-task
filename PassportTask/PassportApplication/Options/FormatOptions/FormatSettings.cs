@@ -9,8 +9,8 @@ namespace PassportApplication.Options.FormatOptions
 
         public FormatSettings() 
         {
-            SeriesTemplate = new Regex(@"\d{4}");
-            NumberTemplate = new Regex(@"\d{6}");
+            SeriesTemplate = new Regex(@"^\d{4}$");
+            NumberTemplate = new Regex(@"^\d{6}$");
         }
     }
 }

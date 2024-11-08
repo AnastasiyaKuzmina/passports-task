@@ -1,12 +1,13 @@
 ﻿using PassportApplication.Models.Dto;
+using PassportApplication.Results;
 
 namespace PassportApplication.Repositories.Interfaces
 {
     public interface IRepository
     {
-        PassportDto? GetPassportActivity(string series, string number);
-        List<PassportChangesDto>? GetPassportsChangesForDate(short day, short month, short year);
-        List<PassportActivityHistoryDto>? GetPassportHistory(string series, string number);
-
+        Task<Result<PassportDto>> GetPassportActivityAsync(string series, string number);
+        Task<Result<List<PassportActivityHistoryDto>>> GetPassportHistoryAsync(string series, string number);
+        Task<Result<List<PassportChangesDto>>> GetPassportsChangesForDateAsync(short day, short month, short year);
+        
     }
 }

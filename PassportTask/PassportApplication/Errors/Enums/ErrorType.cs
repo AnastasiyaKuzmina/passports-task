@@ -2,6 +2,8 @@
 {
     public enum ErrorType
     {
-        None
+        None,
+        WrongPassportFormat,
+        FileDoesNotExist
     }
 }

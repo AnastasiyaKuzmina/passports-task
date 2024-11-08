@@ -26,44 +26,26 @@ namespace PassportApplication.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("GetPassportActivity")]
-        public IActionResult GetPassportActivity(string series, string number)
+        public async Task<ActionResult<PassportDto>> GetPassportActivity(string series, string number)
         {
-            PassportDto? result = _repository.GetPassportActivity(series, number);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return new OkObjectResult(result);
-        }
-
-        [HttpGet]
-        [Route("GetPassportsChangesForDate")]
-        public IActionResult GetPassportsChangesForDate(short day, short month, short year)
-        {
-            List<PassportChangesDto>? result = _repository.GetPassportsChangesForDate(day, month, year);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return new OkObjectResult(result);
+            var result = await _repository.GetPassportActivityAsync(series, number);
+            return result.ToActionResult();
         }
 
         [HttpGet]
         [Route("GetPassportHistory")]
-        public IActionResult GetPassportHistory(string series, string number)
+        public async Task<ActionResult<List<PassportActivityHistoryDto>>> GetPassportHistory(string series, string number)
         {
-            List<PassportActivityHistoryDto>? result = _repository.GetPassportHistory(series, number);
+            var result = await _repository.GetPassportHistoryAsync(series, number);
+            return result.ToActionResult();
+        }
 
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return new OkObjectResult(result);
+        [HttpGet]
+        [Route("GetPassportsChangesForDate")]
+        public async Task<ActionResult<List<PassportChangesDto>>> GetPassportsChangesForDate(short day, short month, short year)
+        {
+            var result = await _repository.GetPassportsChangesForDateAsync(day, month, year);
+            return result.ToActionResult();
         }
     }
 }

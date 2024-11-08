@@ -38,7 +38,7 @@ namespace PassportApplication.Services.CopyServices
                 await command1.ExecuteNonQueryAsync();
                 NpgsqlCommand command2 = new NpgsqlCommand(string.Format("COPY TempPassports (Series, Number) FROM \'{0}\' DELIMITER ',' CSV HEADER;", path), connection);
                 await command2.ExecuteNonQueryAsync();
-                NpgsqlCommand command3 = new NpgsqlCommand("NSERT INTO public.testpassports2 (series, \"number\") \r\nSELECT DISTINCT CAST(Series AS smallint), CAST(substring(Number from 4 for 3) AS integer)\r\nFROM TempPassports WHERE (Series ~ '\\d{4}' AND Number ~ '\\d{6}')\r\nON CONFLICT (series, \"number\") DO UPDATE SET active = false;", connection);
+                NpgsqlCommand command3 = new NpgsqlCommand("NSERT INTO public.testpassports2 (series, \"number\") \r\nSELECT DISTINCT CAST(Series AS smallint), CAST(substring(Number from 4 for 3) AS integer)\r\nFROM TempPassports WHERE (Series ~ '^\\d{4}$' AND Number ~ '^\\d{6}$')\r\nON CONFLICT (series, \"number\") DO UPDATE SET active = false;", connection);
                 await command3.ExecuteNonQueryAsync();
                 NpgsqlCommand command4 = new NpgsqlCommand("DROP TABLE TempPassports", connection);
                 await command4.ExecuteNonQueryAsync();
