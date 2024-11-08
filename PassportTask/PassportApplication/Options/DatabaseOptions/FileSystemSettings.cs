@@ -13,9 +13,19 @@ namespace PassportApplication.Options.DatabaseOptions
         public string DatabasePath { get; set; }
 
         /// <summary>
-        /// Passports path
+        /// Current passports path
         /// </summary>
-        public string PassportsPath { get; set; }
+        public string CurrentPassportsPath { get; set; }
+
+        /// <summary>
+        /// Passports path 1
+        /// </summary>
+        public string PassportsPath1 { get; set; }
+
+        /// <summary>
+        /// Passports path 2
+        /// </summary>
+        public string PassportsPath2 { get; set; }
 
         /// <summary>
         /// Passports template path
@@ -39,7 +49,8 @@ namespace PassportApplication.Options.DatabaseOptions
         public FileSystemSettings(IConfiguration configuration)
         {
             DatabasePath = GetDatabasePath(configuration);
-            PassportsPath = GetPassportsPath(configuration);
+            PassportsPath1 = GetPassportsPath1(configuration);
+            PassportsPath2 = GetPassportsPath2(configuration);
             PassportsTemplatePath = GetPassportsTemplatePath(configuration);
             PassportsHistoryPath = GetPassportsHistoryPath(configuration);
             FileNameFormat = GetFileNameFormat(configuration);
@@ -54,9 +65,17 @@ namespace PassportApplication.Options.DatabaseOptions
             return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, directory, database);
         }
 
-        private string GetPassportsPath(IConfiguration configuration)
+        private string GetPassportsPath1(IConfiguration configuration)
         {
-            var path = configuration.GetSection("FileSystemDatabase").GetSection("Passports").Value;
+            var path = configuration.GetSection("FileSystemDatabase").GetSection("Passports1").Value;
+            if (path == null) throw new NotImplementedException();
+
+            return Path.Combine(DatabasePath, path);
+        }
+
+        private string GetPassportsPath2(IConfiguration configuration)
+        {
+            var path = configuration.GetSection("FileSystemDatabase").GetSection("Passports2").Value;
             if (path == null) throw new NotImplementedException();
 
             return Path.Combine(DatabasePath, path);

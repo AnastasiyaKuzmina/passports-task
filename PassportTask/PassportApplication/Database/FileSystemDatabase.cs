@@ -33,7 +33,8 @@ namespace PassportApplication.Database
                 Directory.CreateDirectory(FileSystemSettings.DatabasePath);
                 Directory.CreateDirectory(FileSystemSettings.PassportsHistoryPath);
                 InitializePassportsFile();
-                File.Copy(FileSystemSettings.PassportsTemplatePath, FileSystemSettings.PassportsPath);
+                FileSystemSettings.CurrentPassportsPath = FileSystemSettings.PassportsPath1;
+                File.Copy(FileSystemSettings.PassportsTemplatePath, FileSystemSettings.PassportsPath1);
                 return;
             }
 
@@ -42,7 +43,7 @@ namespace PassportApplication.Database
                 InitializePassportsFile();
             }
 
-            if ((File.Exists(FileSystemSettings.PassportsPath) == false) ||
+            if (((File.Exists(FileSystemSettings.PassportsPath1) == false) && (File.Exists(FileSystemSettings.PassportsPath2) == false)) ||
                 (Directory.Exists(FileSystemSettings.PassportsHistoryPath) == false))
             {
                 throw new Exception();

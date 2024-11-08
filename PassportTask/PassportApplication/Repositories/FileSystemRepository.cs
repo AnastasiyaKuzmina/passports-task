@@ -32,7 +32,7 @@ namespace PassportApplication.Repositories
             byteNumber = (int)(symbol / 8);
             index = (int)(symbol % 8);
 
-            using (FileStream fstream = new FileStream(_fileSystemDatabase.FileSystemSettings.PassportsPath, FileMode.Open))
+            using (FileStream fstream = new FileStream(_fileSystemDatabase.FileSystemSettings.CurrentPassportsPath, FileMode.Open))
             {
                 fstream.Seek(byteNumber, SeekOrigin.Begin);
                 fstream.Read(bytesToRead, 0, 1);
@@ -89,9 +89,8 @@ namespace PassportApplication.Repositories
                 return null;
             }
 
-            int byteNumber = 0;
-            byte[] bytesToRead1 = new byte[1];
-            byte[] bytesToRead2 = new byte[1];
+            byte[] bytesToRead1 = new byte[1250000];
+            byte[] bytesToRead2 = new byte[1250000];
 
             List<PassportChangesDto> result = new List<PassportChangesDto>();
 
@@ -107,18 +106,35 @@ namespace PassportApplication.Repositories
             {
                 using (FileStream fstreamPrevious = new FileStream(previousFilePath, FileMode.Open))
                 {
-                    while ((fstreamCurrent.Read(bytesToRead1, 0, bytesToRead1.Length) > 0)
-                        && (fstreamPrevious.Read(bytesToRead2, 0, bytesToRead2.Length) > 0))
+                    for (int j = 0; j < 10000; j++)
                     {
-                        if (bytesToRead1[0] == bytesToRead2[0])
-                        {
-                            byteNumber++;
-                            continue;
-                        }
+                        fstreamCurrent.Read(bytesToRead1, 0, bytesToRead1.Length);
+                        fstreamPrevious.Read(bytesToRead2, 0, bytesToRead2.Length);
 
-                        AddPassportChanges(bytesToRead1, bytesToRead2, result, byteNumber);
-                        byteNumber++;
+                        for (int i = 0; i < bytesToRead1.Length; i++)
+                        {
+                            if (bytesToRead1[i] == bytesToRead2[i])
+                            {
+                                continue;
+                            }
+
+                            AddPassportChanges(bytesToRead1[i], bytesToRead2[i], result, j * 1000 + i);
+                        }
                     }
+                    
+
+                    //while ((fstreamCurrent.Read(bytesToRead1, 0, bytesToRead1.Length) > 0)
+                    //    && (fstreamPrevious.Read(bytesToRead2, 0, bytesToRead2.Length) > 0))
+                    //{
+                    //    if (bytesToRead1[0] == bytesToRead2[0])
+                    //    {
+                    //        byteNumber++;
+                    //        continue;
+                    //    }
+
+                    //    AddPassportChanges(bytesToRead1, bytesToRead2, result, byteNumber);
+                    //    byteNumber++;
+                    //}
                 }
             }
             return result;
@@ -134,14 +150,14 @@ namespace PassportApplication.Repositories
             return true;
         }
 
-        private void AddPassportChanges(byte[] bytesToRead1, byte[] bytesToRead2, List<PassportChangesDto> list, int byteNumber)
+        private void AddPassportChanges(byte bytesToRead1, byte bytesToRead2, List<PassportChangesDto> list, int byteNumber)
         {
             long symbol;
             int number;
             short series;
 
-            char[] binaryNumber1 = Convert.ToString(bytesToRead1[0], 2).PadLeft(8, '0').ToCharArray();
-            char[] binaryNumber2 = Convert.ToString(bytesToRead2[0], 2).PadLeft(8, '0').ToCharArray();
+            char[] binaryNumber1 = Convert.ToString(bytesToRead1, 2).PadLeft(8, '0').ToCharArray();
+            char[] binaryNumber2 = Convert.ToString(bytesToRead2, 2).PadLeft(8, '0').ToCharArray();
 
             for (int i = 0; i < 8; i++)
             {
@@ -152,7 +168,7 @@ namespace PassportApplication.Repositories
 
                 symbol = byteNumber * 8 + i;
                 series = (short)(symbol / 1000000);
-                number = (int)(symbol / 1000000);
+                number = (int)(symbol % 1000000);
 
                 if (binaryNumber1[i] == '1')
                 {

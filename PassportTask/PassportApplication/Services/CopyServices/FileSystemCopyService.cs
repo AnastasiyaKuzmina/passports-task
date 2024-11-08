@@ -36,9 +36,9 @@ namespace PassportApplication.Services.CopyServices
             char[] binaryNumber;
             byte[] bytesToRead = new byte[1];
 
-            Debug.WriteLine("Start Copy!");
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            //Debug.WriteLine("Start Copy!");
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
 
             await Task.Run(() =>
             {
@@ -81,11 +81,19 @@ namespace PassportApplication.Services.CopyServices
                         }
                     }
                 }
-                File.Copy(newFilePath, _fileSystemDatabase.FileSystemSettings.PassportsPath, true);
+                if (_fileSystemDatabase.FileSystemSettings.CurrentPassportsPath == _fileSystemDatabase.FileSystemSettings.PassportsPath1)
+                {
+                    File.Copy(newFilePath, _fileSystemDatabase.FileSystemSettings.PassportsPath2, true);
+                    _fileSystemDatabase.FileSystemSettings.CurrentPassportsPath = _fileSystemDatabase.FileSystemSettings.PassportsPath2;
+                } else
+                {
+                    File.Copy(newFilePath, _fileSystemDatabase.FileSystemSettings.PassportsPath1, true);
+                    _fileSystemDatabase.FileSystemSettings.CurrentPassportsPath = _fileSystemDatabase.FileSystemSettings.PassportsPath1;
+                }
             });
 
-            sw.Stop();
-            Debug.WriteLine("End Copy {0}", sw.Elapsed.TotalSeconds);
+            //sw.Stop();
+            //Debug.WriteLine("End Copy {0}", sw.Elapsed.TotalSeconds);
         }
     }
 }
