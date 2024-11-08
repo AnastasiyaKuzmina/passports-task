@@ -23,7 +23,7 @@ namespace PassportApplication.Database
         /// Constructor of ApplicationContext
         /// </summary>
         /// <param name="options">Application context options</param>
-        public ApplicationContext(DbContextOptions<ApplicationContext> options, IConfiguration configuration) : base(options)
+        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
             Database.EnsureCreated();
         }

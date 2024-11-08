@@ -52,6 +52,8 @@ namespace PassportApplication
         /// <param name="env">Instance of an object implementing IWebHostEnvironment</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseExceptionHandlerMiddleware();
+
             if (env.IsDevelopment())
             {
                 app.UseSwagger();

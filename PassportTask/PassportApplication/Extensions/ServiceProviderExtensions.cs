@@ -87,7 +87,7 @@ namespace PassportApplication.Extensions
 
                 case DatabaseMode.PostgreSql:
                 case DatabaseMode.MsSql:
-                    services.AddSingleton<IRepository, SqlRepository>();
+                    services.AddScoped<IRepository, SqlRepository>();
                     return;
             }
         }

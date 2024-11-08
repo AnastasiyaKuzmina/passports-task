@@ -10,6 +10,7 @@ namespace PassportApplication.Results
         public T? Value { get; set; }
         public Error Error { get; set; }
         public int StatusCode { get; }
+        public bool IsSuccess => Error.ErrorType == ErrorType.None;
 
         public Result(T? value)
         { 
