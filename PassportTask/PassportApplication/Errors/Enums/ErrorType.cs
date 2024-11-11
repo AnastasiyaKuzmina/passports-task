@@ -4,6 +4,7 @@
     {
         None,
         WrongPassportFormat,
-        FileDoesNotExist
+        FileDoesNotExist,
+        ControllerNullArgument
     }
 }

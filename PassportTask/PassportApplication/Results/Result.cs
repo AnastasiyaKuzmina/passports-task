@@ -66,6 +66,8 @@ namespace PassportApplication.Results
                     return StatusCodes.Status500InternalServerError;
                 case ErrorType.WrongPassportFormat:
                     return StatusCodes.Status400BadRequest;
+                case ErrorType.ControllerNullArgument:
+                    return StatusCodes.Status400BadRequest;
                 default:
                     throw new NotImplementedException();
             }
