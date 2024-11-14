@@ -28,9 +28,9 @@ namespace PassportApplication.Services.CopyServices
         /// </summary>
         /// <param name="FilePath">File path</param>
         /// <returns></returns>
-        public async Task<Result> CopyAsync(string FilePath)
+        public async Task<Result> CopyAsync(string filePath)
         {
-            string path = Path.GetFullPath(FilePath);
+            string path = Path.GetFullPath(filePath);
 
             using (NpgsqlConnection connection = new NpgsqlConnection(_applicationContext.Database.GetConnectionString()))
             {

@@ -32,9 +32,9 @@ namespace PassportApplication.Services.CopyServices
         /// </summary>
         /// <param name="FilePath">File path</param>
         /// <returns></returns>
-        public async Task<Result> CopyAsync(string FilePath)
+        public async Task<Result> CopyAsync(string filePath)
         {
-            if (File.Exists(FilePath) == false)
+            if (File.Exists(filePath) == false)
             {
                 return new Result(new Error(ErrorType.FileDoesNotExist, "File for copy doesn't exist"));
             }
@@ -66,7 +66,7 @@ namespace PassportApplication.Services.CopyServices
             {
                 using (FileStream fstream = new FileStream(writeFilePath, FileMode.Open))
                 {
-                    using (StreamReader sr = new StreamReader(FilePath))
+                    using (StreamReader sr = new StreamReader(filePath))
                     {
                         int i = 0;
                         string? line;

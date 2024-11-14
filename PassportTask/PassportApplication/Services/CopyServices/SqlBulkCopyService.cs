@@ -31,9 +31,9 @@ namespace PassportApplication.Services.CopyServices
         /// Copies from csv to database
         /// </summary>
         /// <returns></returns>
-        public async Task<Result> CopyAsync(string FilePath)
+        public async Task<Result> CopyAsync(string filePath)
         {
-            IDataReader reader = new CsvReader(FilePath);
+            IDataReader reader = new CsvReader(filePath);
             using (var bulkCopy = new SqlBulkCopy(_applicationContext.Database.GetConnectionString(), SqlBulkCopyOptions.TableLock))
             {
                 bulkCopy.DestinationTableName = "[passportsdb].[dbo].[Passports]";

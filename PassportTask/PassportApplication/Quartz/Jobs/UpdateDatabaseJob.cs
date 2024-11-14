@@ -31,7 +31,7 @@ namespace PassportApplication.Quartz.Jobs
 
             if (updateResult.IsSuccess == false) 
             {
-                Debug.WriteLine("Unsuccess update");
+                Debug.WriteLine("Unsuccess update: " + updateResult.Error.Message);
             }
             else
             {

@@ -11,6 +11,6 @@ namespace PassportApplication.Services.Interfaces
         /// Updates the database
         /// </summary>
         /// <returns></returns>
-        public Task<Result> CopyAsync(string FilePath);
+        public Task<Result> CopyAsync(string filePath);
     }
 }

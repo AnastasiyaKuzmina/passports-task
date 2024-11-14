@@ -1,6 +1,4 @@
-﻿using PassportApplication.Services.Interfaces;
-
-namespace PassportApplication.Options.UpdateOptions
+﻿namespace PassportApplication.Options.UpdateOptions
 {
     /// <summary>
     /// Update settings class
@@ -8,9 +6,17 @@ namespace PassportApplication.Options.UpdateOptions
     public class UpdateSettings
     {
         /// <summary>
-        /// File URL to download
+        /// Yandex Disk Token
         /// </summary>
-        public string FileUrl { get; set; }
+        public string YandexDiskToken { get; set; }
+        /// <summary>
+        /// Yandex Disk file directory
+        /// </summary>
+        public string YandexDiskDirectory { get; set; }
+        /// <summary>
+        /// Yandex Disk file name
+        /// </summary>
+        public string YandexDiskFileName { get; set; }
         /// <summary>
         /// Directory path to download
         /// </summary>
@@ -30,15 +36,33 @@ namespace PassportApplication.Options.UpdateOptions
         /// <param name="configuration"></param>
         public UpdateSettings(IConfiguration configuration)
         {
-            FileUrl = GetFileUrl(configuration);
+            YandexDiskToken = GetYandexDiskToken(configuration);
+            YandexDiskDirectory = GetYandexDiskDirectory(configuration);
+            YandexDiskFileName = GetYandexDiskFileName(configuration);
             DirectoryPath = GetDirectoryPath(configuration);
             FilePath = GetFilePath(configuration);
             ExtractPath = GetExtractPath(configuration);
         }
 
-        private string GetFileUrl(IConfiguration configuration)
+        private string GetYandexDiskToken(IConfiguration configuration)
         {
-            var path = configuration.GetSection("DatabaseUpdate").GetSection("FileUrl").Value;
+            var token = configuration.GetSection("DatabaseUpdate").GetSection("YandexDisk").GetSection("Token").Value;
+            if (token == null) throw new NotImplementedException();
+
+            return token;
+        }
+
+        private string GetYandexDiskDirectory(IConfiguration configuration)
+        {
+            var path = configuration.GetSection("DatabaseUpdate").GetSection("YandexDisk").GetSection("Directory").Value;
+            if (path == null) throw new NotImplementedException();
+
+            return path;
+        }
+
+        private string GetYandexDiskFileName(IConfiguration configuration)
+        {
+            var path = configuration.GetSection("DatabaseUpdate").GetSection("YandexDisk").GetSection("FileName").Value;
             if (path == null) throw new NotImplementedException();
 
             return path;

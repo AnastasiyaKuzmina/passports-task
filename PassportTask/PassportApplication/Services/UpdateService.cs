@@ -35,7 +35,7 @@ namespace PassportApplication.Services
         /// <returns></returns>
         public async Task<Result> UpdateAsync()
         {
-            var fileDownloadResult = await _fileDownloadService.DownloadFileAsync(_updateSettings.FileUrl, _updateSettings.DirectoryPath, _updateSettings.FilePath);
+            var fileDownloadResult = await _fileDownloadService.DownloadFileAsync(_updateSettings.YandexDiskToken, _updateSettings.YandexDiskDirectory, _updateSettings.YandexDiskFileName, _updateSettings.DirectoryPath, _updateSettings.FilePath);
             if (fileDownloadResult.IsSuccess == false) return fileDownloadResult;
 
             var unpackResult = await _unpackService.UnpackAsync(_updateSettings.FilePath, _updateSettings.ExtractPath);

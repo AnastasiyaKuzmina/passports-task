@@ -2,6 +2,9 @@
 using PassportApplication.Errors;
 using PassportApplication.Errors.Enums;
 using PassportApplication.Services.Interfaces;
+using YandexDisk.Client.Http;
+using YandexDisk.Client.Protocol;
+using YandexDisk.Client.Clients;
 
 namespace PassportApplication.Services
 {
@@ -13,38 +16,49 @@ namespace PassportApplication.Services
         /// <summary>
         /// Downloads a csv file
         /// </summary>
-        /// <param name="url">File's url</param>
+        /// <param name="YandexToken">Yandex token</param>
         /// <param name="DirectoryPath">Directory path</param>
         /// <param name="FilePath">File path</param>
         /// <returns></returns>
-        public async Task<Result> DownloadFileAsync(string url, string DirectoryPath, string FilePath)
+        public async Task<Result> DownloadFileAsync(string yandexToken, string yandexDirectory, string yandexFileName, string directoryPath, string filePath)
         {
-            if (Directory.Exists(DirectoryPath) == false)
+            if (Directory.Exists(directoryPath))
             {
-                Directory.CreateDirectory(DirectoryPath);
+                Directory.Delete(directoryPath, true);
             }
-            else
-            {
-                Directory.Delete(DirectoryPath, true);
-                Directory.CreateDirectory(DirectoryPath);
-            }
+            Directory.CreateDirectory(directoryPath);
 
-            using (var httpClient = new HttpClient())
+            var apiConnection = new DiskHttpApi(yandexToken);
+            if (apiConnection == null) return new Result(new Error(ErrorType.YandexDiskError, "Incorrect Yandex Disk token"));
+
+            var rootFolderData = await apiConnection.MetaInfo.GetInfoAsync(new ResourceRequest
             {
-                using (var response = await httpClient.GetAsync(url))
-                {
-                    if (response.IsSuccessStatusCode == false)
-                    {
-                        return new Result(new Error(ErrorType.HttpClientError, "Unable to download the file"));
-                    }
-                    using (var fileStream = new FileStream(FilePath, FileMode.Create, FileAccess.Write, FileShare.None))
-                    {
-                        await response.Content.CopyToAsync(fileStream);
-                    }
-                }
-            }
+                Path = "/" + yandexDirectory + "/"
+            });
+
+            if (rootFolderData == null) return new Result(new Error(ErrorType.YandexDiskError, "Incorrect Yandex Disk path"));
+
+            Resource? data = rootFolderData.Embedded.Items.Where(i => i.Name == yandexFileName).FirstOrDefault();
+            if (data == null) return new Result(new Error(ErrorType.YandexDiskError, "No Data.zip file in Yandex disk"));
+
+            await apiConnection.Files.DownloadFileAsync(data.Path, filePath);
 
             return new Result();
+
+            //using (var httpClient = new HttpClient())
+            //{
+            //    using (var response = await httpClient.GetAsync(url))
+            //    {
+            //        if (response.IsSuccessStatusCode == false)
+            //        {
+            //            return new Result(new Error(ErrorType.HttpClientError, "Unable to download the file"));
+            //        }
+            //        using (var fileStream = new FileStream(FilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+            //        {
+            //            await response.Content.CopyToAsync(fileStream);
+            //        }
+            //    }
+            //}
         }
     }
 }

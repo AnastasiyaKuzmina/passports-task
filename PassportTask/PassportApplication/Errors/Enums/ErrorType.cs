@@ -6,6 +6,7 @@
         WrongPassportFormat,
         FileDoesNotExist,
         ControllerNullArgument,
-        HttpClientError
+        HttpClientError,
+        YandexDiskError
     }
 }

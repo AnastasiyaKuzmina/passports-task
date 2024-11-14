@@ -14,6 +14,6 @@ namespace PassportApplication.Services.Interfaces
         /// <param name="DirectoryPath">Directory path</param>
         /// <param name="FilePath">File path</param>
         /// <returns></returns>
-        public Task<Result> DownloadFileAsync(string url, string DirectoryPath, string FilePath);
+        public Task<Result> DownloadFileAsync(string yandexToken, string yandexDirectory, string yandexFileName, string directoryPath, string filePath);
     }
 }
