@@ -10,6 +10,12 @@ namespace PassportApplication.Results
         public int StatusCode { get; protected set; }
         public bool IsSuccess => Error.ErrorType == ErrorType.None;
 
+        public Result() 
+        { 
+            Error = new Error();
+            StatusCode = SetStatusCode();
+        }
+
         public Result(Error error)
         {
             Error = error;
@@ -37,6 +43,8 @@ namespace PassportApplication.Results
                     return StatusCodes.Status400BadRequest;
                 case ErrorType.ControllerNullArgument:
                     return StatusCodes.Status400BadRequest;
+                case ErrorType.HttpClientError:
+                    return StatusCodes.Status500InternalServerError;
                 default:
                     throw new NotImplementedException();
             }

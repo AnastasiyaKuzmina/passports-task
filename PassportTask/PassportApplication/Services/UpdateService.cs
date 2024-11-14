@@ -1,6 +1,6 @@
 ﻿using PassportApplication.Options.UpdateOptions;
 using PassportApplication.Services.Interfaces;
-using System.Diagnostics;
+using PassportApplication.Results;
 
 namespace PassportApplication.Services
 {
@@ -33,11 +33,18 @@ namespace PassportApplication.Services
         /// Updates database 
         /// </summary>
         /// <returns></returns>
-        public async Task UpdateAsync()
+        public async Task<Result> UpdateAsync()
         {
-            //await _fileDownloadService.DownloadFileAsync(_updateSettings.FileUrl, _updateSettings.DirectoryPath, _updateSettings.FilePath);
-            //await _unpackService.UnpackAsync(_updateSettings.FilePath, _updateSettings.ExtractPath);
-            //await _copyService.CopyAsync(Directory.GetFiles(_updateSettings.ExtractPath)[0]);
+            var fileDownloadResult = await _fileDownloadService.DownloadFileAsync(_updateSettings.FileUrl, _updateSettings.DirectoryPath, _updateSettings.FilePath);
+            if (fileDownloadResult.IsSuccess == false) return fileDownloadResult;
+
+            var unpackResult = await _unpackService.UnpackAsync(_updateSettings.FilePath, _updateSettings.ExtractPath);
+            if (unpackResult.IsSuccess == false) return unpackResult;
+                
+            var copyResult = await _copyService.CopyAsync(Directory.GetFiles(_updateSettings.ExtractPath)[0]);
+            if (copyResult.IsSuccess == false) return copyResult;
+
+            return new Result();
         }
     }
 }

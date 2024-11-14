@@ -1,4 +1,4 @@
-﻿using PassportApplication.Exceptions;
+﻿using PassportApplication.Exceptions.Middleware;
 
 namespace PassportApplication.Extensions
 {

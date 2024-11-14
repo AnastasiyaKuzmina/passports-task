@@ -1,4 +1,6 @@
-﻿namespace PassportApplication.Services.Interfaces
+﻿using PassportApplication.Results;
+
+namespace PassportApplication.Services.Interfaces
 {
     /// <summary>
     /// File download interface
@@ -12,6 +14,6 @@
         /// <param name="DirectoryPath">Directory path</param>
         /// <param name="FilePath">File path</param>
         /// <returns></returns>
-        public Task DownloadFileAsync(string url, string DirectoryPath, string FilePath);
+        public Task<Result> DownloadFileAsync(string url, string DirectoryPath, string FilePath);
     }
 }

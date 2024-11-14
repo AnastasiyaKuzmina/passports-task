@@ -9,7 +9,7 @@ namespace PassportApplication.Results
     {
         public T? Value { get; set; }
 
-        public Result(T? value) : base(new Error(ErrorType.None))
+        public Result(T? value) : base(new Error())
         { 
             Value = value;
         }

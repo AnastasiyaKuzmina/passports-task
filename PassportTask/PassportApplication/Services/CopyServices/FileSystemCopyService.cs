@@ -2,7 +2,9 @@
 using System.Diagnostics;
 using PassportApplication.Services.Interfaces;
 using PassportApplication.Database;
-using System.Diagnostics.Eventing.Reader;
+using PassportApplication.Results;
+using PassportApplication.Errors;
+using PassportApplication.Errors.Enums;
 
 namespace PassportApplication.Services.CopyServices
 {
@@ -30,32 +32,38 @@ namespace PassportApplication.Services.CopyServices
         /// </summary>
         /// <param name="FilePath">File path</param>
         /// <returns></returns>
-        public async Task CopyAsync(string FilePath)
+        public async Task<Result> CopyAsync(string FilePath)
         {
+            if (File.Exists(FilePath) == false)
+            {
+                return new Result(new Error(ErrorType.FileDoesNotExist, "File for copy doesn't exist"));
+            }
+
             long symbol;
             int byteNumber, index;
             char[] binaryNumber;
             byte[] bytesToRead = new byte[1];
+            
+            string writeFilePath;
 
-            //Debug.WriteLine("Start Copy!");
-            //Stopwatch sw = new Stopwatch();
-            //sw.Start();
+            if (_fileSystemDatabase.FileSystemSettings.CurrentPassportsPath)
+            {
+                writeFilePath = _fileSystemDatabase.FileSystemSettings.PassportsPath2;
+            } 
+            else
+            {
+                writeFilePath = _fileSystemDatabase.FileSystemSettings.PassportsPath1;
+            }
+
+            if (File.Exists(_fileSystemDatabase.FileSystemSettings.PassportsTemplatePath) == false)
+            {
+                return new Result(new Error(ErrorType.FileDoesNotExist, "Passports template file doesn't exist"));
+            }
+            
+            File.Copy(_fileSystemDatabase.FileSystemSettings.PassportsTemplatePath, writeFilePath, true);
 
             await Task.Run(() =>
             {
-                string writeFilePath;
-
-                if (_fileSystemDatabase.FileSystemSettings.CurrentPassportsPath)
-                {
-                    writeFilePath = _fileSystemDatabase.FileSystemSettings.PassportsPath2;
-                } 
-                else
-                {
-                    writeFilePath = _fileSystemDatabase.FileSystemSettings.PassportsPath1;
-                }
-                
-                File.Copy(_fileSystemDatabase.FileSystemSettings.PassportsTemplatePath, writeFilePath, true);
-
                 using (FileStream fstream = new FileStream(writeFilePath, FileMode.Open))
                 {
                     using (StreamReader sr = new StreamReader(FilePath))
@@ -110,8 +118,7 @@ namespace PassportApplication.Services.CopyServices
                 }
             });
 
-            //sw.Stop();
-            //Debug.WriteLine("End Copy {0}", sw.Elapsed.TotalSeconds);
+            return new Result();
         }
     }
 }

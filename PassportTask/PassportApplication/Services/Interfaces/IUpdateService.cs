@@ -1,4 +1,6 @@
-﻿namespace PassportApplication.Services.Interfaces
+﻿using PassportApplication.Results;
+
+namespace PassportApplication.Services.Interfaces
 {
     /// <summary>
     /// Update service interface
@@ -9,6 +11,6 @@
         /// Updates database
         /// </summary>
         /// <returns></returns>
-        public Task UpdateAsync();
+        public Task<Result> UpdateAsync();
     }
 }

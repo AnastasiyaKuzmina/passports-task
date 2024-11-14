@@ -1,4 +1,7 @@
-﻿using PassportApplication.Services.Interfaces;
+﻿using PassportApplication.Results;
+using PassportApplication.Errors;
+using PassportApplication.Errors.Enums;
+using PassportApplication.Services.Interfaces;
 
 namespace PassportApplication.Services
 {
@@ -14,7 +17,7 @@ namespace PassportApplication.Services
         /// <param name="DirectoryPath">Directory path</param>
         /// <param name="FilePath">File path</param>
         /// <returns></returns>
-        public async Task DownloadFileAsync(string url, string DirectoryPath, string FilePath)
+        public async Task<Result> DownloadFileAsync(string url, string DirectoryPath, string FilePath)
         {
             if (Directory.Exists(DirectoryPath) == false)
             {
@@ -28,14 +31,20 @@ namespace PassportApplication.Services
 
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.GetStreamAsync(url))
+                using (var response = await httpClient.GetAsync(url))
                 {
+                    if (response.IsSuccessStatusCode == false)
+                    {
+                        return new Result(new Error(ErrorType.HttpClientError, "Unable to download the file"));
+                    }
                     using (var fileStream = new FileStream(FilePath, FileMode.Create, FileAccess.Write, FileShare.None))
                     {
-                        await response.CopyToAsync(fileStream);
+                        await response.Content.CopyToAsync(fileStream);
                     }
                 }
             }
+
+            return new Result();
         }
     }
 }

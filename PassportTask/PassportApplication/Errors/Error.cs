@@ -7,9 +7,9 @@ namespace PassportApplication.Errors
         public ErrorType ErrorType { get; set; }
         public string? Message { get; set; }
 
-        public Error(ErrorType errorType) 
+        public Error() 
         {
-            ErrorType = errorType;
+            ErrorType = ErrorType.None;
         }
         public Error(ErrorType errorType, string message)
         {

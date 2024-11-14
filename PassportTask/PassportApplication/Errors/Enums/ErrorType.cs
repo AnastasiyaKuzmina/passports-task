@@ -5,6 +5,7 @@
         None,
         WrongPassportFormat,
         FileDoesNotExist,
-        ControllerNullArgument
+        ControllerNullArgument,
+        HttpClientError
     }
 }

@@ -3,6 +3,7 @@ using Npgsql;
 
 using PassportApplication.Database;
 using PassportApplication.Services.Interfaces;
+using PassportApplication.Results;
 
 namespace PassportApplication.Services.CopyServices
 {
@@ -27,7 +28,7 @@ namespace PassportApplication.Services.CopyServices
         /// </summary>
         /// <param name="FilePath">File path</param>
         /// <returns></returns>
-        public async Task CopyAsync(string FilePath)
+        public async Task<Result> CopyAsync(string FilePath)
         {
             string path = Path.GetFullPath(FilePath);
 
@@ -44,6 +45,7 @@ namespace PassportApplication.Services.CopyServices
                 await command4.ExecuteNonQueryAsync();
                 connection.Close();
             }
+            return new Result();
         }
     }
 }
