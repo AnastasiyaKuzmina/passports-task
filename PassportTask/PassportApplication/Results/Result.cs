@@ -4,59 +4,28 @@ using PassportApplication.Errors.Enums;
 
 namespace PassportApplication.Results
 {
-
-    public class Result<T>
+    public class Result
     {
-        public T? Value { get; set; }
-        public Error Error { get; set; }
-        public int StatusCode { get; }
+        public Error Error { get; protected set; }
+        public int StatusCode { get; protected set; }
         public bool IsSuccess => Error.ErrorType == ErrorType.None;
-
-        public Result(T? value)
-        { 
-            Value = value;
-            Error = new Error(ErrorType.None);
-            StatusCode = SetStatusCode();
-        }
 
         public Result(Error error)
         {
-            Value = default;
             Error = error;
             StatusCode = SetStatusCode();
         }
 
-        public ActionResult<T> ToActionResult()
+        public ActionResult ToActionResult()
         {
-            if (Error.ErrorType == ErrorType.None)
+            return new ObjectResult(Error.Message)
             {
-                return new ObjectResult(Value)
-                {
-                    DeclaredType = typeof(T),
-                    StatusCode = StatusCode
-                };
-            } 
-            else
-            {
-                return new ObjectResult(Error.Message)
-                {
-                    DeclaredType = typeof(string),
-                    StatusCode = StatusCode
-                };
-            }
+                DeclaredType = typeof(string),
+                StatusCode = StatusCode
+            };
         }
 
-        public static implicit operator Result<T>(T? result)
-        {
-            return new Result<T>(result);
-        }
-
-        public static implicit operator Result<T>(Error error)
-        {
-            return new Result<T>(error);
-        }
-
-        private int SetStatusCode()
+        protected int SetStatusCode()
         {
             switch (Error.ErrorType)
             {
