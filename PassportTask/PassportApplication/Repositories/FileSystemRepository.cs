@@ -2,9 +2,7 @@
 using PassportApplication.Models.Dto;
 using PassportApplication.Options.FormatOptions;
 using PassportApplication.Repositories.Interfaces;
-using PassportApplication.Results;
-using PassportApplication.Errors;
-using PassportApplication.Errors.Enums;
+using PassportApplication.Results.Generic;
 
 namespace PassportApplication.Repositories
 {
@@ -29,7 +27,7 @@ namespace PassportApplication.Repositories
 
             if (CheckPassport(series, number) == false)
             {
-                return new Result<PassportDto>(new Error(ErrorType.WrongPassportFormat, "Wrong passport format"));
+                return Result<PassportDto>.Fail("Wrong passport format");
             }
 
             symbol = 1000000 * long.Parse(series) + int.Parse(number);
@@ -47,7 +45,7 @@ namespace PassportApplication.Repositories
 
             if (File.Exists(path) == false)
             {
-                return new Result<PassportDto>(new Error(ErrorType.FileDoesNotExist, "File with passports to read doesn't exist"));
+                return Result<PassportDto>.Fail("File with passports to read doesn't exist");
             }
 
             using (FileStream fstream = new FileStream(path, FileMode.Open))
@@ -58,7 +56,8 @@ namespace PassportApplication.Repositories
 
             binaryNumber = Convert.ToString(bytesToRead[0], 2).PadLeft(8, '0').ToCharArray();
 
-            return binaryNumber[0] == '0' ? new PassportDto { Active = false } : new PassportDto { Active = true };
+            return binaryNumber[0] == '0' ? Result<PassportDto>.Ok(new PassportDto { Active = false }) 
+                : Result<PassportDto>.Ok(new PassportDto { Active = true });
         }
 
         public async Task<Result<List<PassportActivityHistoryDto>>> GetPassportHistoryAsync(string series, string number)
@@ -71,7 +70,7 @@ namespace PassportApplication.Repositories
 
             if (CheckPassport(series, number) == false)
             {
-                return new Result<List<PassportActivityHistoryDto>>(new Error(ErrorType.WrongPassportFormat, "Wrong passport format"));
+                return Result<List<PassportActivityHistoryDto>>.Fail("Wrong passport format");
             }
 
             symbol = 1000000 * long.Parse(series) + int.Parse(number);
@@ -86,7 +85,7 @@ namespace PassportApplication.Repositories
             {
                 if (File.Exists(path = Path.Combine(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath, file.Name)) == false)
                 {
-                    return new Result<List<PassportActivityHistoryDto>>(new Error(ErrorType.FileDoesNotExist, $"File {file.Name} doesn't exist"));
+                    return Result<List<PassportActivityHistoryDto>>.Fail($"File {file.Name} doesn't exist");
                 }
 
                 using (FileStream fstream = new FileStream(path, FileMode.Open))
@@ -100,7 +99,7 @@ namespace PassportApplication.Repositories
                                                 : new PassportActivityHistoryDto { Date = DateOnly.FromDateTime(file.CreationTime), Active = true });
             }
 
-            return result;
+            return Result<List<PassportActivityHistoryDto>>.Ok(result);
         }
 
         public async Task<Result<List<PassportChangesDto>>> GetPassportsChangesForDateAsync(short day, short month, short year)
@@ -111,7 +110,7 @@ namespace PassportApplication.Repositories
 
             if (File.Exists(filePath) == false) 
             {
-                return new Result<List<PassportChangesDto>>(new Error(ErrorType.FileDoesNotExist, $"File {filePath} doesn't exist"));
+                return Result<List<PassportChangesDto>>.Fail($"File {filePath} doesn't exist");
             }
 
             byte[] bytesToRead1 = new byte[1250000];
@@ -163,7 +162,7 @@ namespace PassportApplication.Repositories
                 }
             }
 
-            return result;
+            return Result<List<PassportChangesDto>>.Ok(result);
         }
 
         private bool CheckPassport(string series, string number)

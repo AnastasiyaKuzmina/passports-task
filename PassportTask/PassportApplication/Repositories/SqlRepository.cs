@@ -1,12 +1,11 @@
 ﻿using Mapster;
+
 using PassportApplication.Database;
-using PassportApplication.Errors.Enums;
 using PassportApplication.Models;
 using PassportApplication.Models.Dto;
 using PassportApplication.Options.FormatOptions;
 using PassportApplication.Repositories.Interfaces;
-using PassportApplication.Results;
-using PassportApplication.Errors;
+using PassportApplication.Results.Generic;
 
 namespace PassportApplication.Repositories
 {
@@ -26,11 +25,11 @@ namespace PassportApplication.Repositories
             if ((_formatSettings.SeriesTemplate.IsMatch(series) == false) 
                 || (_formatSettings.NumberTemplate.IsMatch(number) == false))
             {
-                return new Result<PassportDto>(new Error(ErrorType.WrongPassportFormat, "Wrong passport format"));
+                return Result<PassportDto>.Fail("Wrong passport format");
             }
 
             Passport? passport = await _applicationContext.Passports.FindAsync(short.Parse(series), int.Parse(number));
-            return passport.Adapt<PassportDto>();
+            return Result<PassportDto>.Ok(passport.Adapt<PassportDto>());
         }
 
         public Task<Result<List<PassportActivityHistoryDto>>> GetPassportHistoryAsync(string series, string number)

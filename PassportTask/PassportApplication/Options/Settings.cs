@@ -1,8 +1,8 @@
-﻿using PassportApplication.Options.Enums;
-using PassportApplication.Options.DatabaseOptions;
-using PassportApplication.Options.UpdateOptions;
+﻿using PassportApplication.Options.DatabaseOptions;
 using PassportApplication.Options.DatabaseOptions.Interfaces;
+using PassportApplication.Options.Enums;
 using PassportApplication.Options.FormatOptions;
+using PassportApplication.Options.UpdateOptions;
 
 namespace PassportApplication.Options
 {

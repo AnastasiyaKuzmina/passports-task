@@ -1,7 +1,5 @@
 ﻿using System.IO.Compression;
 using PassportApplication.Results;
-using PassportApplication.Errors;
-using PassportApplication.Errors.Enums;
 using PassportApplication.Services.Interfaces;
 
 namespace PassportApplication.Services
@@ -21,11 +19,11 @@ namespace PassportApplication.Services
         {
             if (File.Exists(filePath) == false)
             {
-                return new Result(new Error(ErrorType.FileDoesNotExist, "File for unpack doesn't exist"));
+                return Result.Fail("File for unpack doesn't exist");
             }
 
             await Task.Run(() => ZipFile.ExtractToDirectory(filePath, extractPath));
-            return new Result();
+            return Result.Ok();
         }
     }
 }

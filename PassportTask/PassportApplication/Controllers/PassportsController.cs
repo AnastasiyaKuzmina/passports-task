@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using PassportApplication.Errors;
-using PassportApplication.Errors.Enums;
 using PassportApplication.Models.Dto;
-using PassportApplication.Results;
 using PassportApplication.Repositories.Interfaces;
 
 namespace PassportApplication.Controllers
@@ -33,11 +30,10 @@ namespace PassportApplication.Controllers
         {
             if ((series == null) || (number == null)) 
             {
-                Result<PassportDto> res = new Result<PassportDto>(new Error(ErrorType.ControllerNullArgument, "There is no passport series or number"));
-                return res.ToActionResult();
+                return new BadRequestResult();
             }
             var result = await _repository.GetPassportActivityAsync(series, number);
-            return result.ToActionResult();
+            return result;
         }
 
         [HttpGet]
@@ -46,11 +42,10 @@ namespace PassportApplication.Controllers
         {
             if ((series == null) || (number == null))
             {
-                Result<List<PassportActivityHistoryDto>> res = new Result<List<PassportActivityHistoryDto>>(new Error(ErrorType.ControllerNullArgument, "There is no passport series or number"));
-                return res.ToActionResult();
+                return new BadRequestResult();
             }
             var result = await _repository.GetPassportHistoryAsync(series, number);
-            return result.ToActionResult();
+            return result;
         }
 
         [HttpGet]
@@ -59,11 +54,10 @@ namespace PassportApplication.Controllers
         {
             if ((day == null) || (month == null) || (year == null))
             {
-                Result<List<PassportChangesDto>> res = new Result<List<PassportChangesDto>>(new Error(ErrorType.ControllerNullArgument, "There is no day or month or year"));
-                return res.ToActionResult();
+                return new BadRequestResult();
             }
             var result = await _repository.GetPassportsChangesForDateAsync((short)day, (short)month, (short)year);
-            return result.ToActionResult();
+            return result;
         }
     }
 }

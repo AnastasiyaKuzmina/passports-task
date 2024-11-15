@@ -1,5 +1,5 @@
 ﻿using PassportApplication.Models.Dto;
-using PassportApplication.Results;
+using PassportApplication.Results.Generic;
 
 namespace PassportApplication.Repositories.Interfaces
 {

@@ -1,6 +1,7 @@
 ﻿using Quartz;
-using PassportApplication.Services.Interfaces;
 using System.Diagnostics;
+using PassportApplication.Services.Interfaces;
+
 
 namespace PassportApplication.Quartz.Jobs
 {
@@ -31,7 +32,7 @@ namespace PassportApplication.Quartz.Jobs
 
             if (updateResult.IsSuccess == false) 
             {
-                Debug.WriteLine("Unsuccess update: " + updateResult.Error.Message);
+                Debug.WriteLine("Unsuccess update: " + updateResult.Error?.Message);
             }
             else
             {

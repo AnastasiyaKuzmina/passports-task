@@ -1,10 +1,9 @@
-﻿using System.Text.RegularExpressions;
-using System.Diagnostics;
-using PassportApplication.Services.Interfaces;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
+
 using PassportApplication.Database;
 using PassportApplication.Results;
-using PassportApplication.Errors;
-using PassportApplication.Errors.Enums;
+using PassportApplication.Services.Interfaces;
 
 namespace PassportApplication.Services.CopyServices
 {
@@ -36,7 +35,7 @@ namespace PassportApplication.Services.CopyServices
         {
             if (File.Exists(filePath) == false)
             {
-                return new Result(new Error(ErrorType.FileDoesNotExist, "File for copy doesn't exist"));
+                return Result.Fail("File for copy doesn't exist");
             }
 
             long symbol;
@@ -57,7 +56,7 @@ namespace PassportApplication.Services.CopyServices
 
             if (File.Exists(_fileSystemDatabase.FileSystemSettings.PassportsTemplatePath) == false)
             {
-                return new Result(new Error(ErrorType.FileDoesNotExist, "Passports template file doesn't exist"));
+                return Result.Fail("Passports template file doesn't exist");
             }
             
             File.Copy(_fileSystemDatabase.FileSystemSettings.PassportsTemplatePath, writeFilePath, true);
@@ -118,7 +117,7 @@ namespace PassportApplication.Services.CopyServices
                 }
             });
 
-            return new Result();
+            return Result.Ok();
         }
     }
 }

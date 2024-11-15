@@ -4,10 +4,10 @@ using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 
-using PassportApplication.Readers;
-using PassportApplication.Services.Interfaces;
 using PassportApplication.Database;
+using PassportApplication.Readers;
 using PassportApplication.Results;
+using PassportApplication.Services.Interfaces;
 
 namespace PassportApplication.Services.CopyServices
 {
@@ -48,7 +48,7 @@ namespace PassportApplication.Services.CopyServices
                 sw.Stop();
                 Debug.WriteLine("End! {0}", sw.Elapsed.TotalSeconds);
             }
-            return new Result();
+            return Result.Ok();
         }
     }
 }

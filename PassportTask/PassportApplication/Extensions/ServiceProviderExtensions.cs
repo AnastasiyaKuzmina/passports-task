@@ -8,14 +8,14 @@ using PassportApplication.Database;
 using PassportApplication.Options;
 using PassportApplication.Options.Enums;
 using PassportApplication.Options.DatabaseOptions;
+using PassportApplication.Repositories;
+using PassportApplication.Repositories.Interfaces;
 using PassportApplication.Services;
 using PassportApplication.Services.Interfaces;
 using PassportApplication.Services.CopyServices;
 using PassportApplication.Quartz.Jobs;
 
 using QHostedService = PassportApplication.Quartz.QuartzHostedService;
-using PassportApplication.Repositories.Interfaces;
-using PassportApplication.Repositories;
 
 namespace PassportApplication.Extensions
 {

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace PassportApplication.Exceptions.Middleware
+﻿namespace PassportApplication.Exceptions.Middleware
 {
     public class ExceptionHandlerMiddleware
     {

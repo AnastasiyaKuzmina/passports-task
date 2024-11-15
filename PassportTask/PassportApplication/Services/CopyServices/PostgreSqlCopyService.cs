@@ -2,8 +2,8 @@
 using Npgsql;
 
 using PassportApplication.Database;
-using PassportApplication.Services.Interfaces;
 using PassportApplication.Results;
+using PassportApplication.Services.Interfaces;
 
 namespace PassportApplication.Services.CopyServices
 {
@@ -45,7 +45,7 @@ namespace PassportApplication.Services.CopyServices
                 await command4.ExecuteNonQueryAsync();
                 connection.Close();
             }
-            return new Result();
+            return Result.Ok();
         }
     }
 }

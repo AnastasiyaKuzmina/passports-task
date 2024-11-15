@@ -1,6 +1,6 @@
 ﻿using PassportApplication.Options.UpdateOptions;
-using PassportApplication.Services.Interfaces;
 using PassportApplication.Results;
+using PassportApplication.Services.Interfaces;
 
 namespace PassportApplication.Services
 {
@@ -44,7 +44,7 @@ namespace PassportApplication.Services
             var copyResult = await _copyService.CopyAsync(Directory.GetFiles(_updateSettings.ExtractPath)[0]);
             if (copyResult.IsSuccess == false) return copyResult;
 
-            return new Result();
+            return Result.Ok();
         }
     }
 }

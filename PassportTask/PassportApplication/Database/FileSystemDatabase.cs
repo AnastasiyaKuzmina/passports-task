@@ -1,5 +1,5 @@
-﻿using PassportApplication.Options.DatabaseOptions;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using PassportApplication.Options.DatabaseOptions;
 
 namespace PassportApplication.Database
 {

@@ -1,53 +1,40 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
+
 using PassportApplication.Errors;
-using PassportApplication.Errors.Enums;
+using PassportApplication.Extensions;
 
 namespace PassportApplication.Results
 {
     public class Result
     {
-        public Error Error { get; protected set; }
-        public int StatusCode { get; protected set; }
-        public bool IsSuccess => Error.ErrorType == ErrorType.None;
+        protected readonly Error? _error;
 
-        public Result() 
-        { 
-            Error = new Error();
-            StatusCode = SetStatusCode();
-        }
-
-        public Result(Error error)
+        protected Result()
         {
-            Error = error;
-            StatusCode = SetStatusCode();
+            IsError = false;
+            _error = default;
+        }
+        protected Result(Error error)
+        {
+            IsError = true;
+            _error = error;
         }
 
-        public ActionResult ToActionResult()
-        {
-            return new ObjectResult(Error.Message)
-            {
-                DeclaredType = typeof(string),
-                StatusCode = StatusCode
-            };
-        }
+        public bool IsError { get; }
+        public bool IsSuccess => !IsError;
+        public Error? Error => _error;
+        public static Result Ok() => new();
+        public static Error Fail(string message) => new(message);
+        public static Error Fail(string message, Error innerError) => new(message, innerError);
+        public static Error Fail(string message, string stackTrace) => new(message, stackTrace);
+        public static Error Fail(string message, HttpStatusCode statusCode) => new(message, statusCode);
 
-        protected int SetStatusCode()
-        {
-            switch (Error.ErrorType)
-            {
-                case ErrorType.None:
-                    return StatusCodes.Status200OK;
-                case ErrorType.FileDoesNotExist:
-                    return StatusCodes.Status500InternalServerError;
-                case ErrorType.WrongPassportFormat:
-                    return StatusCodes.Status400BadRequest;
-                case ErrorType.ControllerNullArgument:
-                    return StatusCodes.Status400BadRequest;
-                case ErrorType.HttpClientError:
-                    return StatusCodes.Status500InternalServerError;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
+        public static implicit operator ActionResult(Result result) => result.ToActionResult();
+
+        public static implicit operator Result(Error error) => new(error);
+
+        public TResult Match<TResult>(Func<TResult> success, Func<Error, TResult> failure)
+            => !IsError ? success() : failure(_error!);
     }
 }
