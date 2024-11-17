@@ -125,10 +125,10 @@ namespace PassportApplication.Repositories
         /// <summary>
         /// IRepository.GetPassportsChangesForDateAsync implementation
         /// </summary>
-        /// <param name="day"></param>
-        /// <param name="month"></param>
-        /// <param name="year"></param>
-        /// <returns></returns>
+        /// <param name="day">Day</param>
+        /// <param name="month">Month</param>
+        /// <param name="year">Year</param>
+        /// <returns>Passports' changes for date</returns>
         public async Task<Result<List<PassportChangesDto>>> GetPassportsChangesForDateAsync(short day, short month, short year)
         {
             DateOnly date = new DateOnly(year, month, day);

@@ -30,7 +30,7 @@ namespace PassportApplication.Services.CopyServices
         /// <summary>
         /// Copies from csv to database
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Result instance</returns>
         public async Task<Result> CopyAsync(string filePath)
         {
             IDataReader reader = new CsvReader(filePath);

@@ -14,7 +14,7 @@ namespace PassportApplication.Services
         /// </summary>
         /// <param name="FilePath">File path</param>
         /// <param name="ExtractPath">Extract path</param>
-        /// <returns></returns>
+        /// <returns>Result instance</returns>
         public async Task<Result> UnpackAsync(string filePath, string extractPath)
         {
             if (File.Exists(filePath) == false)

@@ -10,7 +10,7 @@ namespace PassportApplication.Services.Interfaces
         /// <summary>
         /// Updates database
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Result instance</returns>
         public Task<Result> UpdateAsync();
     }
 }

@@ -32,7 +32,7 @@ namespace PassportApplication.Services
         /// <summary>
         /// Updates database 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Result instance</returns>
         public async Task<Result> UpdateAsync()
         {
             var fileDownloadResult = await _fileDownloadService.DownloadFileAsync(_updateSettings.YandexDiskToken, _updateSettings.YandexDiskDirectory, _updateSettings.YandexDiskFileName, _updateSettings.DirectoryPath, _updateSettings.FilePath);

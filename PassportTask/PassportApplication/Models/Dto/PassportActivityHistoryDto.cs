@@ -1,7 +1,7 @@
 ﻿namespace PassportApplication.Models.Dto
 {
     /// <summary>
-    /// Passport changes history DTO class
+    /// Passport changes history DTO
     /// </summary>
     public class PassportActivityHistoryDto
     {
