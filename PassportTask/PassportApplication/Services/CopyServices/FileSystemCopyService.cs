@@ -30,7 +30,7 @@ namespace PassportApplication.Services.CopyServices
         /// Copies from csv to database
         /// </summary>
         /// <param name="FilePath">File path</param>
-        /// <returns></returns>
+        /// <returns>Result instance</returns>
         public async Task<Result> CopyAsync(string filePath)
         {
             if (File.Exists(filePath) == false)

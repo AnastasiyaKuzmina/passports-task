@@ -8,9 +8,9 @@ namespace PassportApplication.Services.Interfaces
     public interface ICopyService
     {
         /// <summary>
-        /// Updates the database
+        /// Copies from csv to database
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Result instance</returns>
         public Task<Result> CopyAsync(string filePath);
     }
 }

@@ -19,11 +19,11 @@ namespace PassportApplication.Controllers
         }
 
         /// <summary>
-        /// Gets passport's activity
+        /// Gets passport's current activity status
         /// </summary>
         /// <param name="series">Passport series</param>
         /// <param name="number">Passport number</param>
-        /// <returns></returns>
+        /// <returns>Passport's current activity status</returns>
         [HttpGet]
         [Route("GetPassportActivity")]
         public async Task<ActionResult<PassportDto>> GetPassportActivity(string? series, string? number)
@@ -36,6 +36,12 @@ namespace PassportApplication.Controllers
             return result;
         }
 
+        /// <summary>
+        /// Gets passport's activity history
+        /// </summary>
+        /// <param name="series">Passport series</param>
+        /// <param name="number">Passport number</param>
+        /// <returns>Passport's history</returns>
         [HttpGet]
         [Route("GetPassportHistory")]
         public async Task<ActionResult<List<PassportActivityHistoryDto>>> GetPassportHistory(string? series, string? number)
@@ -48,6 +54,13 @@ namespace PassportApplication.Controllers
             return result;
         }
 
+        /// <summary>
+        /// Gets passports' changes for date
+        /// </summary>
+        /// <param name="day">Day</param>
+        /// <param name="month">Month</param>
+        /// <param name="year">Year</param>
+        /// <returns>Passports' changes for date</returns>
         [HttpGet]
         [Route("GetPassportsChangesForDate")]
         public async Task<ActionResult<List<PassportChangesDto>>> GetPassportsChangesForDate(short? day, short? month, short? year)

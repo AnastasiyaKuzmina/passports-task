@@ -27,8 +27,8 @@ namespace PassportApplication.Extensions
         /// <summary>
         /// Adds database
         /// </summary>
-        /// <param name="services">IServiceCollection</param>
-        /// <param name="settings">Settings</param>
+        /// <param name="services">IServiceCollection instance</param>
+        /// <param name="settings">Settings instance</param>
         /// <exception cref="Exception"></exception>
         public static void AddDatabase(this IServiceCollection services, Settings settings)
         {
@@ -64,8 +64,8 @@ namespace PassportApplication.Extensions
         /// <summary>
         /// Adds Quartz 
         /// </summary>
-        /// <param name="services">IServiceCollection</param>
-        /// <param name="settings">Settings</param>
+        /// <param name="services">IServiceCollection instance</param>
+        /// <param name="settings">Settings instance</param>
         public static void AddQuartzService(this IServiceCollection services, Settings settings)
         {
             var quartzServiceProvider = GetQuartzServiceProvider(settings);
@@ -77,6 +77,11 @@ namespace PassportApplication.Extensions
             services.AddHostedService<QHostedService>();
         }
 
+        /// <summary>
+        /// Adds IRepository
+        /// </summary>
+        /// <param name="services">IServiceCollection instance</param>
+        /// <param name="settings">Settings instance</param>
         public static void AddRepository(this IServiceCollection services, Settings settings)
         {
             switch (settings.DatabaseMode)

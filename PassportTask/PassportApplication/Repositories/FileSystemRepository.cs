@@ -6,17 +6,31 @@ using PassportApplication.Results.Generic;
 
 namespace PassportApplication.Repositories
 {
+    /// <summary>
+    /// Implements IRepository
+    /// </summary>
     public class FileSystemRepository : IRepository
     {
         private readonly FileSystemDatabase _fileSystemDatabase;
         private readonly FormatSettings _formatSettings;
 
+        /// <summary>
+        /// Constructor of FileSystemRepository
+        /// </summary>
+        /// <param name="fileSystemDatabase">File system database</param>
+        /// <param name="formatSettings">Format settings</param>
         public FileSystemRepository(FileSystemDatabase fileSystemDatabase, FormatSettings formatSettings)
         {
             _fileSystemDatabase = fileSystemDatabase;
             _formatSettings = formatSettings;
         }
-        
+
+        /// <summary>
+        /// IRepository.GetPassportActivityAsync implementation
+        /// </summary>
+        /// <param name="series">Passport series</param>
+        /// <param name="number">Passport number</param>
+        /// <returns>Passport's activity status</returns>
         public async Task<Result<PassportDto>> GetPassportActivityAsync(string series, string number)
         {
             string path;
@@ -60,6 +74,12 @@ namespace PassportApplication.Repositories
                 : Result<PassportDto>.Ok(new PassportDto { Active = true });
         }
 
+        /// <summary>
+        /// IRepository.GetPassportHistoryAsync implementation
+        /// </summary>
+        /// <param name="series">Passport series</param>
+        /// <param name="number">Passport number</param>
+        /// <returns>Passport's history</returns>
         public async Task<Result<List<PassportActivityHistoryDto>>> GetPassportHistoryAsync(string series, string number)
         {
             string path;
@@ -102,6 +122,13 @@ namespace PassportApplication.Repositories
             return Result<List<PassportActivityHistoryDto>>.Ok(result);
         }
 
+        /// <summary>
+        /// IRepository.GetPassportsChangesForDateAsync implementation
+        /// </summary>
+        /// <param name="day"></param>
+        /// <param name="month"></param>
+        /// <param name="year"></param>
+        /// <returns></returns>
         public async Task<Result<List<PassportChangesDto>>> GetPassportsChangesForDateAsync(short day, short month, short year)
         {
             DateOnly date = new DateOnly(year, month, day);

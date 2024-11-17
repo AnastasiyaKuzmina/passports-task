@@ -1,14 +1,26 @@
 ﻿namespace PassportApplication.Exceptions.Middleware
 {
+    /// <summary>
+    /// Exception handler middleware
+    /// </summary>
     public class ExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
 
+        /// <summary>
+        /// Constructor of ExceptionHandlerMiddleware
+        /// </summary>
+        /// <param name="next">Next middleware</param>
         public ExceptionHandlerMiddleware(RequestDelegate next)
         {
             _next = next;
         }
 
+        /// <summary>
+        /// Invokes middleware
+        /// </summary>
+        /// <param name="context">HttpContext instance</param>
+        /// <returns></returns>
         public async Task InvokeAsync(HttpContext context)
         {
             try

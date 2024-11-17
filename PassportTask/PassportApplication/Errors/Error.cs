@@ -6,36 +6,78 @@ using System.Text;
 
 namespace PassportApplication.Errors
 {
+    /// <summary>
+    /// Error class
+    /// </summary>
     public class Error
     {
+        /// <summary>
+        /// Constructor of Error
+        /// </summary>
+        /// <param name="message">Error message</param>
         public Error(string message)
         {
             Message = message;
             StackTrace = GetStackTrace();
         }
 
+        /// <summary>
+        /// Constructor of Error
+        /// </summary>
+        /// <param name="message">Error message</param>
+        /// <param name="innerError">Inner error</param>
         public Error(string message, Error innerError) : this(message)
         {
             InnerError = innerError;
         }
 
+        /// <summary>
+        /// Constructor of Error
+        /// </summary>
+        /// <param name="message">Error message</param>
+        /// <param name="stackTrace">Stack trace</param>
         public Error(string message, string stackTrace) : this(message)
         {
             StackTrace = stackTrace;
         }
 
+        /// <summary>
+        /// Constructor of Error
+        /// </summary>
+        /// <param name="message">Error message</param>
+        /// <param name="statusCode">Status code</param>
         public Error(string message, HttpStatusCode statusCode) : this(message)
         {
             StatusCode = statusCode;
         }
 
+        /// <summary>
+        /// Status code
+        /// </summary>
         public HttpStatusCode? StatusCode { get; }
+        /// <summary>
+        /// Inner error
+        /// </summary>
         public Error? InnerError { get; }
+        /// <summary>
+        /// Message
+        /// </summary>
         public string Message { get; }
+        /// <summary>
+        /// Stack trace
+        /// </summary>
         public string? StackTrace { get; }
 
+        /// <summary>
+        /// Converts Error to string
+        /// </summary>
+        /// <param name="error">Error instance</param>
         public static implicit operator string(Error error) => error.ToString();
 
+        /// <summary>
+        /// Creates information string about error
+        /// </summary>
+        /// <returns>Error info</returns>
         public override string ToString()
         {
             var stringBuilder = new StringBuilder();
