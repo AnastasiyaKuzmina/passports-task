@@ -90,5 +90,15 @@ namespace PassportApplication.Results
         /// <returns>TResult instance</returns>
         public TResult Match<TResult>(Func<TResult> success, Func<Error, TResult> failure)
             => !IsError ? success() : failure(_error!);
+
+        /// <summary>
+        /// Asynchronously matches Result with TResult
+        /// </summary>
+        /// <typeparam name="TResult">Type</typeparam>
+        /// <param name="success">Method to asynchronously match Result with TResult if Result has no error</param>
+        /// <param name="failure">Method to asynchronously match Result with TResult if Result has an error</param>
+        /// <returns>TResult instance</returns>
+        public async Task<TResult> MatchAsync<TResult>(Func<Task<TResult>> success, Func<Error, Task<TResult>> failure)
+            => !IsError ? await success() : await failure(_error!);
     }
 }

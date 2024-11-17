@@ -51,14 +51,24 @@ namespace PassportApplication.Results.Generic
         public static Result<TValue> Ok(TValue value) => new(value);
 
         /// <summary>
-        /// 
+        /// Matches Result<TValue> with TResult
         /// </summary>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="success"></param>
-        /// <param name="failure"></param>
-        /// <returns></returns>
+        /// <typeparam name="TResult">Type</typeparam>
+        /// <param name="success">Method to match Result<TValue> with TResult if Result has no error</param>
+        /// <param name="failure">Method to match Result<TValue> with TResult if Result has an error</param>
+        /// <returns>TResult instance</returns>
         public TResult Match<TResult>(Func<TValue, TResult> success, Func<Error, TResult> failure)
             => !IsError ? success(Value!) : failure(_error!);
+
+        /// <summary>
+        /// Asynchronously matches Result<TValue> with TResult
+        /// </summary>
+        /// <typeparam name="TResult">Type</typeparam>
+        /// <param name="success">Method to asynchronously match Result<TValue> with TResult if Result has no error</param>
+        /// <param name="failure">Method to asynchronously match Result<TValue> with TResult if Result has an error</param>
+        /// <returns>TResult instance</returns>
+        public async Task<TResult> MatchAsync<TResult>(Func<TValue, Task<TResult>> success, Func<Error, Task<TResult>> failure)
+            => !IsError ? await success(Value!) : await failure(_error!);
 
         /// <summary>
         /// Tries to get result value
