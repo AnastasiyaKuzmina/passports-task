@@ -32,7 +32,7 @@ namespace PassportApplication.Repositories
         /// <param name="series">Passport series</param>
         /// <param name="number">Passport number</param>
         /// <returns>Passport's activity status</returns>
-        public async Task<Result<PassportDto>> GetPassportActivityAsync(string series, string number)
+        public async Task<Result<PassportDto>> GetPassportActivityAsync(string series, string number, CancellationToken cancellationToken)
         {
             string path;
             long symbol;
@@ -66,7 +66,7 @@ namespace PassportApplication.Repositories
             using (FileStream fstream = new FileStream(path, FileMode.Open))
             {
                 fstream.Seek(byteNumber, SeekOrigin.Begin);
-                await fstream.ReadAsync(bytesToRead, 0, 1);
+                await fstream.ReadAsync(bytesToRead, 0, 1, cancellationToken);
             }
 
             binaryNumber = Convert.ToString(bytesToRead[0], 2).PadLeft(8, '0').ToCharArray();
@@ -80,7 +80,7 @@ namespace PassportApplication.Repositories
         /// <param name="series">Passport series</param>
         /// <param name="number">Passport number</param>
         /// <returns>Passport's history</returns>
-        public async Task<Result<List<PassportActivityHistoryDto>>> GetPassportHistoryAsync(string series, string number)
+        public async Task<Result<List<PassportActivityHistoryDto>>> GetPassportHistoryAsync(string series, string number, CancellationToken cancellationToken)
         {
             string path;
             long symbol;
@@ -114,7 +114,7 @@ namespace PassportApplication.Repositories
                 using (FileStream fstream = new FileStream(path, FileMode.Open))
                 {
                     fstream.Seek(byteNumber, SeekOrigin.Begin);
-                    await fstream.ReadAsync(bytesToRead, 0, 1);
+                    await fstream.ReadAsync(bytesToRead, 0, 1, cancellationToken);
                 }
 
                 binaryNumber = Convert.ToString(bytesToRead[0], 2).PadLeft(8, '0').ToCharArray();
@@ -135,7 +135,7 @@ namespace PassportApplication.Repositories
         /// <param name="month">Month</param>
         /// <param name="year">Year</param>
         /// <returns>Passports' changes for date</returns>
-        public async Task<Result<List<PassportChangesDto>>> GetPassportsChangesForDateAsync(short day, short month, short year)
+        public async Task<Result<List<PassportChangesDto>>> GetPassportsChangesForDateAsync(short day, short month, short year, CancellationToken cancellationToken)
         {
             DateOnly date = new DateOnly(year, month, day);
             string filePath = Path.Combine(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath, 
@@ -165,8 +165,8 @@ namespace PassportApplication.Repositories
                 {
                     for (int j = 0; j < 10000; j++)
                     {
-                        await fstreamCurrent.ReadAsync(bytesToRead1, 0, bytesToRead1.Length);
-                        await fstreamPrevious.ReadAsync(bytesToRead2, 0, bytesToRead2.Length);
+                        await fstreamCurrent.ReadAsync(bytesToRead1, 0, bytesToRead1.Length, cancellationToken);
+                        await fstreamPrevious.ReadAsync(bytesToRead2, 0, bytesToRead2.Length, cancellationToken);
 
                         for (int i = 0; i < bytesToRead1.Length; i++)
                         {

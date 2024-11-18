@@ -30,7 +30,7 @@ namespace PassportApplication.Services.CopyServices
         /// </summary>
         /// <param name="FilePath">File path</param>
         /// <returns>Result instance</returns>
-        public async Task<Result> CopyAsync(string filePath, FormatSettings formatSettings)
+        public async Task<Result> CopyAsync(string filePath, FormatSettings formatSettings, CancellationToken cancellationToken)
         {
             string path = Path.GetFullPath(filePath);
 

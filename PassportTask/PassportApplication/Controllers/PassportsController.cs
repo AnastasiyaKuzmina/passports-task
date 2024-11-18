@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PassportApplication.Models.Dto;
 using PassportApplication.Repositories.Interfaces;
+using System.Threading;
 
 namespace PassportApplication.Controllers
 {
@@ -26,13 +27,13 @@ namespace PassportApplication.Controllers
         /// <returns>Passport's current activity status</returns>
         [HttpGet]
         [Route("GetPassportActivity")]
-        public async Task<ActionResult<PassportDto>> GetPassportActivity(string? series, string? number)
+        public async Task<ActionResult<PassportDto>> GetPassportActivity(string? series, string? number, CancellationToken cancellationToken)
         {
             if ((series == null) || (number == null)) 
             {
                 return new BadRequestResult();
             }
-            var result = await _repository.GetPassportActivityAsync(series, number);
+            var result = await _repository.GetPassportActivityAsync(series, number, cancellationToken);
             return result;
         }
 
@@ -44,13 +45,13 @@ namespace PassportApplication.Controllers
         /// <returns>Passport's history</returns>
         [HttpGet]
         [Route("GetPassportHistory")]
-        public async Task<ActionResult<List<PassportActivityHistoryDto>>> GetPassportHistory(string? series, string? number)
+        public async Task<ActionResult<List<PassportActivityHistoryDto>>> GetPassportHistory(string? series, string? number, CancellationToken cancellationToken)
         {
             if ((series == null) || (number == null))
             {
                 return new BadRequestResult();
             }
-            var result = await _repository.GetPassportHistoryAsync(series, number);
+            var result = await _repository.GetPassportHistoryAsync(series, number, cancellationToken);
             return result;
         }
 
@@ -63,13 +64,13 @@ namespace PassportApplication.Controllers
         /// <returns>Passports' changes for date</returns>
         [HttpGet]
         [Route("GetPassportsChangesForDate")]
-        public async Task<ActionResult<List<PassportChangesDto>>> GetPassportsChangesForDate(short? day, short? month, short? year)
+        public async Task<ActionResult<List<PassportChangesDto>>> GetPassportsChangesForDate(short? day, short? month, short? year, CancellationToken cancellationToken)
         {
             if ((day == null) || (month == null) || (year == null))
             {
                 return new BadRequestResult();
             }
-            var result = await _repository.GetPassportsChangesForDateAsync((short)day, (short)month, (short)year);
+            var result = await _repository.GetPassportsChangesForDateAsync((short)day, (short)month, (short)year, cancellationToken);
             return result;
         }
     }

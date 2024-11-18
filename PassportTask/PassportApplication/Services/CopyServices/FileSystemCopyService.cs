@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 using PassportApplication.Database;
 using PassportApplication.Options.FormatOptions;
@@ -12,6 +13,7 @@ namespace PassportApplication.Services.CopyServices
     /// </summary>
     public class FileSystemCopyService : ICopyService
     {
+
         private readonly FileSystemDatabase _fileSystemDatabase;
 
         /// <summary>
@@ -28,7 +30,7 @@ namespace PassportApplication.Services.CopyServices
         /// </summary>
         /// <param name="FilePath">File path</param>
         /// <returns>Result instance</returns>
-        public async Task<Result> CopyAsync(string filePath, FormatSettings formatSettings)
+        public async Task<Result> CopyAsync(string filePath, FormatSettings formatSettings, CancellationToken cancellationToken)
         {
             if (File.Exists(filePath) == false)
             {
@@ -69,15 +71,14 @@ namespace PassportApplication.Services.CopyServices
                         string[] lines;
                         while ((line = sr.ReadLine()) != null)
                         {
-                            i++;
-                            if (i % 1000000 == 0)
+                            if (cancellationToken.IsCancellationRequested)
                             {
-                                Debug.WriteLine(i);
+                                cancellationToken.ThrowIfCancellationRequested();
                             }
+
                             lines = line.Split(',');
 
-                            if ((formatSettings.SeriesTemplate.IsMatch(lines[0]) == false) || 
-                            (formatSettings.NumberTemplate.IsMatch(lines[1]) == false))
+                            if ((formatSettings.SeriesTemplate.IsMatch(lines[0]) == false) || (formatSettings.NumberTemplate.IsMatch(lines[1]) == false))
                             {
                                 continue;
                             }

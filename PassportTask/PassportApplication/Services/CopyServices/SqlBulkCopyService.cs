@@ -32,7 +32,7 @@ namespace PassportApplication.Services.CopyServices
         /// Copies from csv to database
         /// </summary>
         /// <returns>Result instance</returns>
-        public async Task<Result> CopyAsync(string filePath, FormatSettings formatSettings)
+        public async Task<Result> CopyAsync(string filePath, FormatSettings formatSettings, CancellationToken cancellationToken)
         {
             IDataReader reader = new CsvReader(filePath);
             using (var bulkCopy = new SqlBulkCopy(_applicationContext.Database.GetConnectionString(), SqlBulkCopyOptions.TableLock))

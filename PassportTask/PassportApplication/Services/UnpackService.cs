@@ -15,14 +15,14 @@ namespace PassportApplication.Services
         /// <param name="FilePath">File path</param>
         /// <param name="ExtractPath">Extract path</param>
         /// <returns>Result instance</returns>
-        public async Task<Result> UnpackAsync(string filePath, string extractPath)
+        public Result Unpack(string filePath, string extractPath)
         {
             if (!File.Exists(filePath))
             {
                 return Result.Fail("File for unpack doesn't exist");
             }
 
-            await Task.Run(() => ZipFile.ExtractToDirectory(filePath, extractPath));
+            ZipFile.ExtractToDirectory(filePath, extractPath);
             return Result.Ok();
         }
     }

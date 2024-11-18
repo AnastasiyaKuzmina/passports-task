@@ -11,6 +11,6 @@ namespace PassportApplication.Services.Interfaces
         /// Updates database
         /// </summary>
         /// <returns>Result instance</returns>
-        public Task<Result> UpdateAsync();
+        public Task<Result> UpdateAsync(CancellationToken cancellationToken);
     }
 }

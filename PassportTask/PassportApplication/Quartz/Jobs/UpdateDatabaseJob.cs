@@ -28,7 +28,9 @@ namespace PassportApplication.Quartz.Jobs
         /// <returns></returns>
         public async Task Execute(IJobExecutionContext context)
         {
-            var updateResult = await _updateService.UpdateAsync();
+            var cancellationToken = context.CancellationToken;
+
+            var updateResult = await _updateService.UpdateAsync(cancellationToken);
 
             if (updateResult.IsSuccess == false) 
             {

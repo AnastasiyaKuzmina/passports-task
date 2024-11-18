@@ -22,7 +22,7 @@ namespace PassportApplication.Services
         /// <param name="directoryPath">Directory path</param>
         /// <param name="filePath">File path</param>
         /// <returns>Result instance</returns>
-        public async Task<Result> DownloadFileAsync(YandexSettings yandexSettings, string directoryPath, string filePath)
+        public async Task<Result> DownloadFileAsync(YandexSettings yandexSettings, string directoryPath, string filePath, CancellationToken cancellationToken)
         {
             if (Directory.Exists(directoryPath))
             {
@@ -36,14 +36,14 @@ namespace PassportApplication.Services
             var rootFolderData = await apiConnection.MetaInfo.GetInfoAsync(new ResourceRequest
             {
                 Path = "/" + yandexSettings.Directory + "/"
-            });
+            }, cancellationToken);
 
             if (rootFolderData == null) return Result.Fail("Incorrect Yandex Disk path");
 
             Resource? data = rootFolderData.Embedded.Items.FirstOrDefault(i => i.Name == yandexSettings.FileName);
             if (data == null) return Result.Fail("No Data.zip file in Yandex disk");
 
-            await apiConnection.Files.DownloadFileAsync(data.Path, filePath);
+            await apiConnection.Files.DownloadFileAsync(data.Path, filePath, cancellationToken);
 
             return Result.Ok();
 

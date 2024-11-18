@@ -33,18 +33,19 @@ namespace PassportApplication.Services
         /// Updates database 
         /// </summary>
         /// <returns>Result instance</returns>
-        public async Task<Result> UpdateAsync()
+        public async Task<Result> UpdateAsync(CancellationToken cancellationToken)
         {
-            var fileDownloadResult = await _fileDownloadService.DownloadFileAsync(_settings.UpdateSettings.YandexSettings, 
-                _settings.UpdateSettings.DirectoryPath, 
-                _settings.UpdateSettings.FilePath);
+            var fileDownloadResult = await _fileDownloadService.DownloadFileAsync(_settings.UpdateSettings.YandexSettings,
+                _settings.UpdateSettings.DirectoryPath,
+                _settings.UpdateSettings.FilePath,
+                cancellationToken);
 
             if (fileDownloadResult.IsSuccess == false) return fileDownloadResult;
 
-            var unpackResult = await _unpackService.UnpackAsync(_settings.UpdateSettings.FilePath, _settings.UpdateSettings.ExtractPath);
+            var unpackResult = _unpackService.Unpack(_settings.UpdateSettings.FilePath, _settings.UpdateSettings.ExtractPath);
             if (unpackResult.IsSuccess == false) return unpackResult;
-                
-            var copyResult = await _copyService.CopyAsync(Directory.GetFiles(_settings.UpdateSettings.ExtractPath)[0], _settings.FormatSettings);
+
+            var copyResult = await _copyService.CopyAsync(Directory.GetFiles(_settings.UpdateSettings.ExtractPath)[0], _settings.FormatSettings, cancellationToken);
             if (copyResult.IsSuccess == false) return copyResult;
 
             return Result.Ok();

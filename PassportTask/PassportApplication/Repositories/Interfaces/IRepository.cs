@@ -14,14 +14,14 @@ namespace PassportApplication.Repositories.Interfaces
         /// <param name="series">Passport series</param>
         /// <param name="number">Passport number</param>
         /// <returns>Passport's activity status</returns>
-        Task<Result<PassportDto>> GetPassportActivityAsync(string series, string number);
+        Task<Result<PassportDto>> GetPassportActivityAsync(string series, string number, CancellationToken cancellationToken);
         /// <summary>
         /// Gets passport's activity history
         /// </summary>
         /// <param name="series">Passport series</param>
         /// <param name="number">Passport number</param>
         /// <returns>Passport's history</returns>
-        Task<Result<List<PassportActivityHistoryDto>>> GetPassportHistoryAsync(string series, string number);
+        Task<Result<List<PassportActivityHistoryDto>>> GetPassportHistoryAsync(string series, string number, CancellationToken cancellationToken);
         /// <summary>
         /// Gets passports' changes for date
         /// </summary>
@@ -29,7 +29,7 @@ namespace PassportApplication.Repositories.Interfaces
         /// <param name="month">Month</param>
         /// <param name="year">Year</param>
         /// <returns>Passports' changes for date</returns>
-        Task<Result<List<PassportChangesDto>>> GetPassportsChangesForDateAsync(short day, short month, short year);
+        Task<Result<List<PassportChangesDto>>> GetPassportsChangesForDateAsync(short day, short month, short year, CancellationToken cancellationToken);
         
     }
 }

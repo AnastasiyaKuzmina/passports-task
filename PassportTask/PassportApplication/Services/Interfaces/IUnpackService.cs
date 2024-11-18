@@ -13,6 +13,6 @@ namespace PassportApplication.Services.Interfaces
         /// <param name="FilePath">File path</param>
         /// <param name="ExtractPath">Extract path</param>
         /// <returns>Result instance</returns>
-        public Task<Result> UnpackAsync(string filePath, string extractPath);
+        public Result Unpack(string filePath, string extractPath);
     }
 }
