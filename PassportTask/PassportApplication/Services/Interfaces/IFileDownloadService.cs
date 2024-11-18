@@ -1,4 +1,5 @@
-﻿using PassportApplication.Results;
+﻿using PassportApplication.Options.YandexOptions;
+using PassportApplication.Results;
 
 namespace PassportApplication.Services.Interfaces
 {
@@ -16,6 +17,6 @@ namespace PassportApplication.Services.Interfaces
         /// <param name="directoryPath">Directory path</param>
         /// <param name="filePath">File path</param>
         /// <returns>Result instance</returns>
-        public Task<Result> DownloadFileAsync(string yandexToken, string yandexDirectory, string yandexFileName, string directoryPath, string filePath);
+        public Task<Result> DownloadFileAsync(YandexSettings yandexSettings, string directoryPath, string filePath);
     }
 }

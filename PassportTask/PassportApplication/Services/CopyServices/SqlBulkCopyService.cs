@@ -8,6 +8,7 @@ using PassportApplication.Database;
 using PassportApplication.Readers;
 using PassportApplication.Results;
 using PassportApplication.Services.Interfaces;
+using PassportApplication.Options.FormatOptions;
 
 namespace PassportApplication.Services.CopyServices
 {
@@ -31,7 +32,7 @@ namespace PassportApplication.Services.CopyServices
         /// Copies from csv to database
         /// </summary>
         /// <returns>Result instance</returns>
-        public async Task<Result> CopyAsync(string filePath)
+        public async Task<Result> CopyAsync(string filePath, FormatSettings formatSettings)
         {
             IDataReader reader = new CsvReader(filePath);
             using (var bulkCopy = new SqlBulkCopy(_applicationContext.Database.GetConnectionString(), SqlBulkCopyOptions.TableLock))

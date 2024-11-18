@@ -51,10 +51,10 @@ namespace PassportApplication.Readers
             if (_streamReader.EndOfStream) return false;
 
             _currentLine = _streamReader.ReadLine();
-            if (_currentLine == null) return false || Read();
+            if (_currentLine == null) return Read();
 
             _currentLineValues = _currentLine.Split(delimeter);
-            if (_currentLineValues.Length != FieldCount) return false || Read();
+            if (_currentLineValues.Length != FieldCount) return Read();
 
             var invalidRow = false;
             for (int i = 0; i < _currentLineValues.Length; i++)

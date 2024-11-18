@@ -2,6 +2,7 @@
 using PassportApplication.Models.Dto;
 using PassportApplication.Options.FormatOptions;
 using PassportApplication.Repositories.Interfaces;
+using PassportApplication.Results;
 using PassportApplication.Results.Generic;
 
 namespace PassportApplication.Repositories
@@ -41,7 +42,7 @@ namespace PassportApplication.Repositories
 
             if (CheckPassport(series, number) == false)
             {
-                return Result<PassportDto>.Fail("Wrong passport format");
+                return Result.Fail("Wrong passport format");
             }
 
             symbol = 1000000 * long.Parse(series) + int.Parse(number);
@@ -59,7 +60,7 @@ namespace PassportApplication.Repositories
 
             if (File.Exists(path) == false)
             {
-                return Result<PassportDto>.Fail("File with passports to read doesn't exist");
+                return Result.Fail("File with passports to read doesn't exist");
             }
 
             using (FileStream fstream = new FileStream(path, FileMode.Open))
@@ -70,8 +71,7 @@ namespace PassportApplication.Repositories
 
             binaryNumber = Convert.ToString(bytesToRead[0], 2).PadLeft(8, '0').ToCharArray();
 
-            return binaryNumber[0] == '0' ? Result<PassportDto>.Ok(new PassportDto { Active = false }) 
-                : Result<PassportDto>.Ok(new PassportDto { Active = true });
+            return Result<PassportDto>.Ok(new PassportDto { Active = binaryNumber[0] != '0' });
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace PassportApplication.Repositories
 
             if (CheckPassport(series, number) == false)
             {
-                return Result<List<PassportActivityHistoryDto>>.Fail("Wrong passport format");
+                return Result.Fail("Wrong passport format");
             }
 
             symbol = 1000000 * long.Parse(series) + int.Parse(number);
@@ -99,13 +99,16 @@ namespace PassportApplication.Repositories
 
             List<PassportActivityHistoryDto> result = new List<PassportActivityHistoryDto>();
 
-            List<FileSystemInfo> filesList = new DirectoryInfo(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath).GetFileSystemInfos().OrderBy(f => f.CreationTime).ToList();
+            List<FileSystemInfo> filesList = new DirectoryInfo(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath)
+                .GetFileSystemInfos()
+                .OrderBy(f => f.CreationTime)
+                .ToList();
 
             foreach (FileSystemInfo file in filesList)
             {
                 if (File.Exists(path = Path.Combine(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath, file.Name)) == false)
                 {
-                    return Result<List<PassportActivityHistoryDto>>.Fail($"File {file.Name} doesn't exist");
+                    return Result.Fail($"{file.Name} doesn't exist");
                 }
 
                 using (FileStream fstream = new FileStream(path, FileMode.Open))
@@ -115,8 +118,11 @@ namespace PassportApplication.Repositories
                 }
 
                 binaryNumber = Convert.ToString(bytesToRead[0], 2).PadLeft(8, '0').ToCharArray();
-                result.Add(binaryNumber[0] == '0' ? new PassportActivityHistoryDto { Date = DateOnly.FromDateTime(file.CreationTime), Active = false }
-                                                : new PassportActivityHistoryDto { Date = DateOnly.FromDateTime(file.CreationTime), Active = true });
+                result.Add(new PassportActivityHistoryDto 
+                { 
+                    Date = DateOnly.FromDateTime(file.CreationTime), 
+                    Active = binaryNumber[0] != '0' 
+                });
             }
 
             return Result<List<PassportActivityHistoryDto>>.Ok(result);
@@ -137,7 +143,7 @@ namespace PassportApplication.Repositories
 
             if (File.Exists(filePath) == false) 
             {
-                return Result<List<PassportChangesDto>>.Fail($"File {filePath} doesn't exist");
+                return Result.Fail($"File {filePath} doesn't exist");
             }
 
             byte[] bytesToRead1 = new byte[1250000];
@@ -172,7 +178,6 @@ namespace PassportApplication.Repositories
                             AddPassportChanges(bytesToRead1[i], bytesToRead2[i], result, j * 1000 + i);
                         }
                     }
-
 
                     //while ((fstreamCurrent.Read(bytesToRead1, 0, bytesToRead1.Length) > 0)
                     //    && (fstreamPrevious.Read(bytesToRead2, 0, bytesToRead2.Length) > 0))
@@ -222,13 +227,12 @@ namespace PassportApplication.Repositories
                 series = (short)(symbol / 1000000);
                 number = (int)(symbol % 1000000);
 
-                if (binaryNumber1[i] == '1')
-                {
-                    list.Add(new PassportChangesDto { Series = series, Number = number, ChangeType = true });
-                    continue;
-                }
-
-                list.Add(new PassportChangesDto { Series = series, Number = number, ChangeType = false });
+                list.Add(new PassportChangesDto 
+                { 
+                    Series = series, 
+                    Number = number, 
+                    ChangeType = binaryNumber1[i] == '1' 
+                });
             }
         }
     }

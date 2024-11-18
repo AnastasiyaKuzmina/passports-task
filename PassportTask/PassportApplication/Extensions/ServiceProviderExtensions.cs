@@ -102,7 +102,7 @@ namespace PassportApplication.Extensions
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddDatabase(settings);
-            serviceCollection.AddSingleton(u => settings.UpdateSettings);
+            serviceCollection.AddSingleton(u => settings);
             serviceCollection.AddSingleton<UpdateDatabaseJob>();
             serviceCollection.AddSingleton<IFileDownloadService, FileDownloadService>();
             serviceCollection.AddCopy(settings);

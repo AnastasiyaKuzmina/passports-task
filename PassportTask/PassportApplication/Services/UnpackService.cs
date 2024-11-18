@@ -17,7 +17,7 @@ namespace PassportApplication.Services
         /// <returns>Result instance</returns>
         public async Task<Result> UnpackAsync(string filePath, string extractPath)
         {
-            if (File.Exists(filePath) == false)
+            if (!File.Exists(filePath))
             {
                 return Result.Fail("File for unpack doesn't exist");
             }

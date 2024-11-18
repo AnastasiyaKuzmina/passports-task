@@ -1,4 +1,4 @@
-﻿using PassportApplication.Options.UpdateOptions;
+﻿using PassportApplication.Options;
 using PassportApplication.Results;
 using PassportApplication.Services.Interfaces;
 
@@ -9,7 +9,7 @@ namespace PassportApplication.Services
     /// </summary>
     public class UpdateService : IUpdateService
     {
-        private readonly UpdateSettings _updateSettings;
+        private readonly Settings _settings;
         private readonly IFileDownloadService _fileDownloadService;
         private readonly IUnpackService _unpackService;
         private readonly ICopyService _copyService;
@@ -21,9 +21,9 @@ namespace PassportApplication.Services
         /// <param name="unpackService">File unpack service</param>
         /// <param name="parserService">Parser service</param>
         /// <param name="databaseService">Database update service</param>
-        public UpdateService(UpdateSettings updateSettings, IFileDownloadService fileDownloadService, IUnpackService unpackService, ICopyService copyService)
+        public UpdateService(Settings settings, IFileDownloadService fileDownloadService, IUnpackService unpackService, ICopyService copyService)
         {
-            _updateSettings = updateSettings;
+            _settings = settings;
             _fileDownloadService = fileDownloadService;
             _unpackService = unpackService;
             _copyService = copyService;
@@ -35,13 +35,16 @@ namespace PassportApplication.Services
         /// <returns>Result instance</returns>
         public async Task<Result> UpdateAsync()
         {
-            var fileDownloadResult = await _fileDownloadService.DownloadFileAsync(_updateSettings.YandexDiskToken, _updateSettings.YandexDiskDirectory, _updateSettings.YandexDiskFileName, _updateSettings.DirectoryPath, _updateSettings.FilePath);
+            var fileDownloadResult = await _fileDownloadService.DownloadFileAsync(_settings.UpdateSettings.YandexSettings, 
+                _settings.UpdateSettings.DirectoryPath, 
+                _settings.UpdateSettings.FilePath);
+
             if (fileDownloadResult.IsSuccess == false) return fileDownloadResult;
 
-            var unpackResult = await _unpackService.UnpackAsync(_updateSettings.FilePath, _updateSettings.ExtractPath);
+            var unpackResult = await _unpackService.UnpackAsync(_settings.UpdateSettings.FilePath, _settings.UpdateSettings.ExtractPath);
             if (unpackResult.IsSuccess == false) return unpackResult;
                 
-            var copyResult = await _copyService.CopyAsync(Directory.GetFiles(_updateSettings.ExtractPath)[0]);
+            var copyResult = await _copyService.CopyAsync(Directory.GetFiles(_settings.UpdateSettings.ExtractPath)[0], _settings.FormatSettings);
             if (copyResult.IsSuccess == false) return copyResult;
 
             return Result.Ok();

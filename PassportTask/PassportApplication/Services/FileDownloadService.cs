@@ -4,6 +4,7 @@ using YandexDisk.Client.Protocol;
 
 using PassportApplication.Results;
 using PassportApplication.Services.Interfaces;
+using PassportApplication.Options.YandexOptions;
 
 namespace PassportApplication.Services
 {
@@ -21,7 +22,7 @@ namespace PassportApplication.Services
         /// <param name="directoryPath">Directory path</param>
         /// <param name="filePath">File path</param>
         /// <returns>Result instance</returns>
-        public async Task<Result> DownloadFileAsync(string yandexToken, string yandexDirectory, string yandexFileName, string directoryPath, string filePath)
+        public async Task<Result> DownloadFileAsync(YandexSettings yandexSettings, string directoryPath, string filePath)
         {
             if (Directory.Exists(directoryPath))
             {
@@ -29,17 +30,17 @@ namespace PassportApplication.Services
             }
             Directory.CreateDirectory(directoryPath);
 
-            var apiConnection = new DiskHttpApi(yandexToken);
+            var apiConnection = new DiskHttpApi(yandexSettings.Token);
             if (apiConnection == null) return Result.Fail("Incorrect Yandex Disk token");
 
             var rootFolderData = await apiConnection.MetaInfo.GetInfoAsync(new ResourceRequest
             {
-                Path = "/" + yandexDirectory + "/"
+                Path = "/" + yandexSettings.Directory + "/"
             });
 
             if (rootFolderData == null) return Result.Fail("Incorrect Yandex Disk path");
 
-            Resource? data = rootFolderData.Embedded.Items.Where(i => i.Name == yandexFileName).FirstOrDefault();
+            Resource? data = rootFolderData.Embedded.Items.FirstOrDefault(i => i.Name == yandexSettings.FileName);
             if (data == null) return Result.Fail("No Data.zip file in Yandex disk");
 
             await apiConnection.Files.DownloadFileAsync(data.Path, filePath);

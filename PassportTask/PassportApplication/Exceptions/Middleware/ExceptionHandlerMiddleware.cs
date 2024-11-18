@@ -29,11 +29,11 @@
             }
             catch (NotImplementedException ex)
             {
-                await CallResponse(context, "Server Error: Not implemented method");
+                await CallResponse(context, "Server Error (Not implemented method): " + ex.Message);
             }
             catch (Exception ex)
             {
-                await CallResponse(context, "Server Error");
+                await CallResponse(context, "Server Error: " + ex.Message);
             }
         }
 

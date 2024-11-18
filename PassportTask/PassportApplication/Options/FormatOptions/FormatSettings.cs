@@ -18,8 +18,8 @@ namespace PassportApplication.Options.FormatOptions
         /// </summary>
         public FormatSettings() 
         {
-            SeriesTemplate = new Regex(@"^\d{4}$");
-            NumberTemplate = new Regex(@"^\d{6}$");
+            SeriesTemplate = new(@"^\d{4}$");
+            NumberTemplate = new(@"^\d{6}$");
         }
     }
 }
