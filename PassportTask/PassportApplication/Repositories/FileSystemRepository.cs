@@ -63,7 +63,7 @@ namespace PassportApplication.Repositories
                 return Result.Fail("File with passports to read doesn't exist");
             }
 
-            using (FileStream fstream = new FileStream(path, FileMode.Open))
+            await using (FileStream fstream = new FileStream(path, FileMode.Open))
             {
                 fstream.Seek(byteNumber, SeekOrigin.Begin);
                 await fstream.ReadAsync(bytesToRead, 0, 1, cancellationToken);
@@ -111,7 +111,7 @@ namespace PassportApplication.Repositories
                     return Result.Fail($"{file.Name} doesn't exist");
                 }
 
-                using (FileStream fstream = new FileStream(path, FileMode.Open))
+                await using (FileStream fstream = new FileStream(path, FileMode.Open))
                 {
                     fstream.Seek(byteNumber, SeekOrigin.Begin);
                     await fstream.ReadAsync(bytesToRead, 0, 1, cancellationToken);
@@ -159,9 +159,9 @@ namespace PassportApplication.Repositories
                 previousFilePath = _fileSystemDatabase.FileSystemSettings.PassportsTemplatePath;
             }
 
-            using (FileStream fstreamCurrent = new FileStream(filePath, FileMode.Open))
+            await using (FileStream fstreamCurrent = new FileStream(filePath, FileMode.Open))
             {
-                using (FileStream fstreamPrevious = new FileStream(previousFilePath, FileMode.Open))
+                await using (FileStream fstreamPrevious = new FileStream(previousFilePath, FileMode.Open))
                 {
                     for (int j = 0; j < 10000; j++)
                     {

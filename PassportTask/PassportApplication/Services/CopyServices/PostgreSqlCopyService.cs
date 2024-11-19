@@ -34,7 +34,7 @@ namespace PassportApplication.Services.CopyServices
         {
             string path = Path.GetFullPath(filePath);
 
-            using (NpgsqlConnection connection = new NpgsqlConnection(_applicationContext.Database.GetConnectionString()))
+            await using (NpgsqlConnection connection = new NpgsqlConnection(_applicationContext.Database.GetConnectionString()))
             {
                 var sqlCommand = $@"
                     CREATE TEMP TABLE TempPassports (Series CHAR(4), Number CHAR(6));
