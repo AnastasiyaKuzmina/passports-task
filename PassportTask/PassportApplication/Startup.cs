@@ -3,6 +3,8 @@ using MapsterMapper;
 
 using PassportApplication.Extensions;
 using PassportApplication.Options;
+using PassportApplication.Options.Enums;
+using System.Diagnostics;
 
 namespace PassportApplication
 {
@@ -19,14 +21,20 @@ namespace PassportApplication
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            Settings = new Settings(configuration);
+
+            if (!Enum.TryParse(Configuration.GetSection("Settings").GetSection("DatabaseMode").Value, true, out DatabaseMode dm))
+            {
+                throw new NotImplementedException();
+            }
+
+            DatabaseMode = dm;
         }
 
         /// <summary>
         /// Builder configuration
         /// </summary>
         public IConfiguration Configuration { get; }
-        public Settings Settings { get; }
+        public DatabaseMode DatabaseMode { get; set; }
 
         /// <summary>
         /// Services setup
@@ -34,14 +42,14 @@ namespace PassportApplication
         /// <param name="services">Instance of an object implementing IServiceCollection</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDatabase(Settings);
-            services.Configure<Settings>(Configuration);
+            var settings = Configuration.GetSection("Settings").Get<Settings>();
+            services.Configure<Settings>(Configuration.GetSection("Settings"));
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            services.AddQuartzService(Settings);
-            services.AddSingleton(s => Settings.FormatSettings);
-            services.AddRepository(Settings);
+            services.AddQuartzService(settings!, Configuration);
+            services.AddDatabase(settings!);
+            services.AddRepository(settings!);
             services.AddSingleton(TypeAdapterConfig.GlobalSettings);
             services.AddScoped<IMapper, ServiceMapper>();
         }

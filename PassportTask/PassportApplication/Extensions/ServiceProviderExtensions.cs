@@ -3,11 +3,9 @@
 using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
-
 using PassportApplication.Database;
 using PassportApplication.Options;
 using PassportApplication.Options.Enums;
-using PassportApplication.Options.DatabaseOptions;
 using PassportApplication.Repositories;
 using PassportApplication.Repositories.Interfaces;
 using PassportApplication.Services;
@@ -35,29 +33,16 @@ namespace PassportApplication.Extensions
             switch (settings.DatabaseMode)
             {
                 case DatabaseMode.FileSystem:
-                    if (settings.DatabaseSettings is FileSystemSettings fs)
-                    {
-                        services.AddSingleton(f => fs);
-                        services.AddSingleton<FileSystemDatabase>();
-                        return;
-                    }
-                    throw new Exception();
-
+                    services.AddSingleton<FileSystemDatabase>();
+                    return;
                 case DatabaseMode.PostgreSql:
-                    if (settings.DatabaseSettings is PostgreSqlSettings ps)
-                    {
-                        services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(ps.ConnectionString));
-                        return;
-                    }
-                    throw new Exception();
-
+                    services.AddDbContext<ApplicationContext>(
+                        options => options.UseNpgsql(settings.PostgreSqlSettings.ConnectionString));
+                    return;
                 case DatabaseMode.MsSql:
-                    if (settings.DatabaseSettings is MsSqlSettings ms)
-                    {
-                        services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(ms.ConnectionString));
-                        return;
-                    }
-                    throw new Exception();
+                    services.AddDbContext<ApplicationContext>(
+                        options => options.UseNpgsql(settings.MsSqlSettings.ConnectionString));
+                    return;
             }
         }
 
@@ -66,9 +51,9 @@ namespace PassportApplication.Extensions
         /// </summary>
         /// <param name="services">IServiceCollection instance</param>
         /// <param name="settings">Settings instance</param>
-        public static void AddQuartzService(this IServiceCollection services, Settings settings)
+        public static void AddQuartzService(this IServiceCollection services, Settings settings, IConfiguration configuration)
         {
-            var quartzServiceProvider = GetQuartzServiceProvider(settings);
+            var quartzServiceProvider = GetQuartzServiceProvider(settings, configuration);
 
             services.AddSingleton<IJobFactory>(f => new UpdateDatabaseJobFactory(quartzServiceProvider));
             services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
@@ -97,12 +82,12 @@ namespace PassportApplication.Extensions
             }
         }
 
-        private static ServiceProvider GetQuartzServiceProvider(Settings settings)
+        private static ServiceProvider GetQuartzServiceProvider(Settings settings, IConfiguration configuration)
         {
             var serviceCollection = new ServiceCollection();
 
+            serviceCollection.Configure<Settings>(configuration.GetSection("Settings"));
             serviceCollection.AddDatabase(settings);
-            serviceCollection.AddSingleton(u => settings);
             serviceCollection.AddSingleton<UpdateDatabaseJob>();
             serviceCollection.AddSingleton<IFileDownloadService, FileDownloadService>();
             serviceCollection.AddCopy(settings);

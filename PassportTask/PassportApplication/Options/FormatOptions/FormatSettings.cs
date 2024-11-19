@@ -2,24 +2,15 @@
 
 namespace PassportApplication.Options.FormatOptions
 {
-    public class FormatSettings
+    public record FormatSettings
     {
         /// <summary>
         /// Series template
         /// </summary>
-        public Regex SeriesTemplate {  get; }
+        public Regex SeriesTemplate { get; init; } = new(@"^\d{4}$");
         /// <summary>
         /// Number template
         /// </summary>
-        public Regex NumberTemplate {  get; }
-
-        /// <summary>
-        /// Constructor of FormatSettings
-        /// </summary>
-        public FormatSettings() 
-        {
-            SeriesTemplate = new(@"^\d{4}$");
-            NumberTemplate = new(@"^\d{6}$");
-        }
+        public Regex NumberTemplate { get; init; } = new(@"^\d{6}$");
     }
 }

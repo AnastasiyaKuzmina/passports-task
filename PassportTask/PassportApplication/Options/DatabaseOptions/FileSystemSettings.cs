@@ -5,104 +5,109 @@ namespace PassportApplication.Options.DatabaseOptions
     /// <summary>
     /// Implements IDatabaseSettings
     /// </summary>
-    public class FileSystemSettings : IDatabaseSettings
+    public record FileSystemSettings
     {
         /// <summary>
-        /// Database path
+        /// Directory
         /// </summary>
-        public string DatabasePath { get; set; }
+        public string Directory { get; init; }
+
+        /// <summary>
+        /// Database name
+        /// </summary>
+        public string Database { get; init; }
 
         /// <summary>
         /// Current passports path: true if PassportsPath, false if PassportsPath2
         /// </summary>
-        public bool CurrentPassportsPath { get; set; }
+        public bool CurrentPassportsPath { get; set; } = true;
 
         /// <summary>
         /// Passports path 1
         /// </summary>
-        public string PassportsPath1 { get; set; }
+        public string Passports1 { get; init; }
 
         /// <summary>
         /// Passports path 2
         /// </summary>
-        public string PassportsPath2 { get; set; }
+        public string Passports2 { get; init; }
 
         /// <summary>
         /// Passports template path
         /// </summary>
-        public string PassportsTemplatePath { get; set; }
+        public string PassportsTemplate { get; init; }
 
         /// <summary>
         /// Passports history path
         /// </summary>
-        public string PassportsHistoryPath { get; set; }
+        public string PassportsHistory { get; init; }
 
         /// <summary>
         /// File name format
         /// </summary>
-        public string FileNameFormat { get; set; }
+        public string FileNameFormat { get; init; }
 
-        /// <summary>
-        /// Constructor of FileSystemSettings
-        /// </summary>
-        /// <param name="configuration">Application configuration</param>
-        public FileSystemSettings(IConfiguration configuration)
-        {
-            DatabasePath = GetDatabasePath(configuration);
-            PassportsPath1 = GetPassportsPath1(configuration);
-            PassportsPath2 = GetPassportsPath2(configuration);
-            PassportsTemplatePath = GetPassportsTemplatePath(configuration);
-            PassportsHistoryPath = GetPassportsHistoryPath(configuration);
-            FileNameFormat = GetFileNameFormat(configuration);
-        }
+        ///// <summary>
+        ///// Constructor of FileSystemSettings
+        ///// </summary>
+        ///// <param name="configuration">Application configuration</param>
+        //public FileSystemSettings(IConfiguration configuration)
+        //{
+        //    DatabasePath = GetDatabasePath(configuration);
+        //    PassportsPath1 = GetPassportsPath1(configuration);
+        //    PassportsPath2 = GetPassportsPath2(configuration);
+        //    PassportsTemplatePath = GetPassportsTemplatePath(configuration);
+        //    PassportsHistoryPath = GetPassportsHistoryPath(configuration);
+        //    FileNameFormat = GetFileNameFormat(configuration);
+        //}
 
-        private string GetDatabasePath(IConfiguration configuration)
-        {
-            var directory = configuration.GetSection("FileSystemDatabase").GetSection("Directory").Value;
-            var database = configuration.GetSection("FileSystemDatabase").GetSection("Database").Value;
-            if ((directory == null) || (database == null)) throw new NotImplementedException();
+        //private string GetDatabasePath(IConfiguration configuration)
+        //{
+        //    var directory = configuration.GetSection("FileSystemDatabase").GetSection("Directory").Value;
+        //    var database = configuration.GetSection("FileSystemDatabase").GetSection("Database").Value;
+        //    if ((directory == null) || (database == null)) throw new NotImplementedException();
 
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, directory, database);
-        }
+        //    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, directory, database);
+        //}
 
-        private string GetPassportsPath1(IConfiguration configuration)
-        {
-            var path = configuration.GetSection("FileSystemDatabase").GetSection("Passports1").Value;
-            if (path == null) throw new NotImplementedException();
+        //private string GetPassportsPath1(IConfiguration configuration)
+        //{
+        //    var path = configuration.GetSection("FileSystemDatabase").GetSection("Passports1").Value;
+        //    if (path == null) throw new NotImplementedException();
 
-            return Path.Combine(DatabasePath, path);
-        }
+        //    return Path.Combine(DatabasePath, path);
+        //}
 
-        private string GetPassportsPath2(IConfiguration configuration)
-        {
-            var path = configuration.GetSection("FileSystemDatabase").GetSection("Passports2").Value;
-            if (path == null) throw new NotImplementedException();
+        //private string GetPassportsPath2(IConfiguration configuration)
+        //{
+        //    var path = configuration.GetSection("FileSystemDatabase").GetSection("Passports2").Value;
+        //    if (path == null) throw new NotImplementedException();
 
-            return Path.Combine(DatabasePath, path);
-        }
+        //    return Path.Combine(DatabasePath, path);
+        //}
 
-        private string GetPassportsTemplatePath(IConfiguration configuration)
-        {
-            var path = configuration.GetSection("FileSystemDatabase").GetSection("PassportsTemplate").Value;
-            if (path == null) throw new NotImplementedException();
+        //private string GetPassportsTemplatePath(IConfiguration configuration)
+        //{
+        //    var path = configuration.GetSection("FileSystemDatabase").GetSection("PassportsTemplate").Value;
+        //    if (path == null) throw new NotImplementedException();
 
-            return Path.Combine(DatabasePath, path);
-        }
+        //    return Path.Combine(DatabasePath, path);
+        //}
 
-        private string GetPassportsHistoryPath(IConfiguration configuration)
-        {
-            var path = configuration.GetSection("FileSystemDatabase").GetSection("PassportsHistory").Value;
-            if (path == null) throw new NotImplementedException();
+        //private string GetPassportsHistoryPath(IConfiguration configuration)
+        //{
+        //    var path = configuration.GetSection("FileSystemDatabase").GetSection("PassportsHistory").Value;
+        //    if (path == null) throw new NotImplementedException();
 
-            return Path.Combine(DatabasePath, path);
-        }
+        //    return Path.Combine(DatabasePath, path);
+        //}
 
-        private string GetFileNameFormat(IConfiguration configuration)
-        {
-            var format = configuration.GetSection("FileSystemDatabase").GetSection("FileNameFormat").Value;
-            if (format == null) throw new NotImplementedException();
+        //private string GetFileNameFormat(IConfiguration configuration)
+        //{
+        //    var format = configuration.GetSection("FileSystemDatabase").GetSection("FileNameFormat").Value;
+        //    if (format == null) throw new NotImplementedException();
 
-            return format;
-        }
+        //    return format;
+        //}
     }
 }

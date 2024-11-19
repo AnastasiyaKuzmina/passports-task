@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PassportApplication.Models.Dto;
 using PassportApplication.Repositories.Interfaces;
-using System.Threading;
 
 namespace PassportApplication.Controllers
 {

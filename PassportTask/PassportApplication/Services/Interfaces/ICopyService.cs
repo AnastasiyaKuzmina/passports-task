@@ -1,5 +1,4 @@
-﻿using PassportApplication.Options.FormatOptions;
-using PassportApplication.Results;
+﻿using PassportApplication.Results;
 
 namespace PassportApplication.Services.Interfaces
 {
@@ -12,6 +11,6 @@ namespace PassportApplication.Services.Interfaces
         /// Copies from csv to database
         /// </summary>
         /// <returns>Result instance</returns>
-        public Task<Result> CopyAsync(string filePath, FormatSettings formatSettings, CancellationToken cancellationToken);
+        public Task<Result> CopyAsync(CancellationToken cancellationToken);
     }
 }

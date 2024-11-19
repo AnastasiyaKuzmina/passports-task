@@ -6,16 +6,16 @@ namespace PassportApplication.Exceptions.Dto
     /// <summary>
     /// Exception DTO
     /// </summary>
-    public class ExceptionDto
+    public record ExceptionDto
     {
         /// <summary>
         /// Status code
         /// </summary>
-        public HttpStatusCode? StatusCode { get; }
+        public HttpStatusCode? StatusCode { get; init; }
         /// <summary>
         /// Message
         /// </summary>
-        public string Message { get; }
+        public string Message { get; init; }
 
         /// <summary>
         /// Constructor of ExceptionDto

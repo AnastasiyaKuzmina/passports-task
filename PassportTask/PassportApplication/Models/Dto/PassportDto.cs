@@ -3,11 +3,11 @@
     /// <summary>
     /// Passport DTO
     /// </summary>
-    public class PassportDto
+    public record PassportDto
     {
         /// <summary>
         /// Passport activity
         /// </summary>
-        public bool Active { get; set; }
+        public bool Active { get; init; }
     }
 }

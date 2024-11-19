@@ -1,8 +1,6 @@
-﻿using System.Diagnostics;
-using System.Text.RegularExpressions;
-
+﻿using Microsoft.Extensions.Options;
 using PassportApplication.Database;
-using PassportApplication.Options.FormatOptions;
+using PassportApplication.Options;
 using PassportApplication.Results;
 using PassportApplication.Services.Interfaces;
 
@@ -13,15 +11,16 @@ namespace PassportApplication.Services.CopyServices
     /// </summary>
     public class FileSystemCopyService : ICopyService
     {
-
+        private readonly Settings _settings;
         private readonly FileSystemDatabase _fileSystemDatabase;
 
         /// <summary>
         /// Constructor of FileSystemCopyService
         /// </summary>
         /// <param name="fileSystemDatabase">File system database</param>
-        public FileSystemCopyService(FileSystemDatabase fileSystemDatabase)
+        public FileSystemCopyService(IOptions<Settings> settings, FileSystemDatabase fileSystemDatabase)
         {
+            _settings = settings.Value;
             _fileSystemDatabase = fileSystemDatabase;
         }
 
@@ -30,8 +29,10 @@ namespace PassportApplication.Services.CopyServices
         /// </summary>
         /// <param name="FilePath">File path</param>
         /// <returns>Result instance</returns>
-        public async Task<Result> CopyAsync(string filePath, FormatSettings formatSettings, CancellationToken cancellationToken)
+        public async Task<Result> CopyAsync(CancellationToken cancellationToken)
         {
+            var extractPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _settings.UpdateSettings.Directory, _settings.UpdateSettings.Extract);
+            string filePath = Directory.GetFiles(extractPath)[0];
             if (File.Exists(filePath) == false)
             {
                 return Result.Fail("File for copy doesn't exist");
@@ -44,21 +45,22 @@ namespace PassportApplication.Services.CopyServices
             
             string writeFilePath;
 
-            if (_fileSystemDatabase.FileSystemSettings.CurrentPassportsPath)
+            if (_fileSystemDatabase.CurrentPassportsPath)
             {
-                writeFilePath = _fileSystemDatabase.FileSystemSettings.PassportsPath2;
+                var passportsPath2 = 
+                writeFilePath = _fileSystemDatabase.PassportsPath2;
             } 
             else
             {
-                writeFilePath = _fileSystemDatabase.FileSystemSettings.PassportsPath1;
+                writeFilePath = _fileSystemDatabase.PassportsPath1;
             }
 
-            if (File.Exists(_fileSystemDatabase.FileSystemSettings.PassportsTemplatePath) == false)
+            if (File.Exists(_fileSystemDatabase.PassportsTemplatePath) == false)
             {
                 return Result.Fail("Passports template file doesn't exist");
             }
             
-            File.Copy(_fileSystemDatabase.FileSystemSettings.PassportsTemplatePath, writeFilePath, true);
+            File.Copy(_fileSystemDatabase.PassportsTemplatePath, writeFilePath, true);
 
             bool canceled = false;
 
@@ -80,7 +82,8 @@ namespace PassportApplication.Services.CopyServices
 
                             lines = line.Split(',');
 
-                            if ((formatSettings.SeriesTemplate.IsMatch(lines[0]) == false) || (formatSettings.NumberTemplate.IsMatch(lines[1]) == false))
+                            if ((_settings.FormatSettings.SeriesTemplate.IsMatch(lines[0]) == false) 
+                            || (_settings.FormatSettings.NumberTemplate.IsMatch(lines[1]) == false))
                             {
                                 continue;
                             }
@@ -105,21 +108,21 @@ namespace PassportApplication.Services.CopyServices
 
             if (canceled) return Result.Fail("Copy was canceled");
 
-            string newFilePath = Path.Combine(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath, 
-                                                    DateTime.Now.ToString(_fileSystemDatabase.FileSystemSettings.FileNameFormat) + ".txt");
+            string newFilePath = Path.Combine(_fileSystemDatabase.PassportsHistoryPath, 
+                                                    DateTime.Now.ToString(_settings.FileSystemSettings.FileNameFormat) + ".txt");
             File.Copy(writeFilePath, newFilePath);
 
-            if (_fileSystemDatabase.FileSystemSettings.CurrentPassportsPath)
+            if (_fileSystemDatabase.CurrentPassportsPath)
             {
-                _fileSystemDatabase.FileSystemSettings.CurrentPassportsPath = false;
-                File.Delete(_fileSystemDatabase.FileSystemSettings.PassportsPath1);
+                File.Delete(_fileSystemDatabase.PassportsPath1);
             }
             else
             {
-                _fileSystemDatabase.FileSystemSettings.CurrentPassportsPath = true;
-                File.Delete(_fileSystemDatabase.FileSystemSettings.PassportsPath2);
+                File.Delete(_fileSystemDatabase.PassportsPath2);
             }
-            
+
+            _fileSystemDatabase.CurrentPassportsPath = !_fileSystemDatabase.CurrentPassportsPath;
+
             return Result.Ok();
         }
     }

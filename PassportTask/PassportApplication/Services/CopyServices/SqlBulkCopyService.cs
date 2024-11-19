@@ -8,7 +8,8 @@ using PassportApplication.Database;
 using PassportApplication.Readers;
 using PassportApplication.Results;
 using PassportApplication.Services.Interfaces;
-using PassportApplication.Options.FormatOptions;
+using PassportApplication.Options;
+using Microsoft.Extensions.Options;
 
 namespace PassportApplication.Services.CopyServices
 {
@@ -17,14 +18,16 @@ namespace PassportApplication.Services.CopyServices
     /// </summary>
     public class SqlBulkCopyService : ICopyService
     {
+        private readonly Settings _settings;
         private readonly ApplicationContext _applicationContext;
 
         /// <summary>
         /// Constructor of SqlBulkCopyService
         /// </summary>
         /// <param name="applicationContext">Application context</param>
-        public SqlBulkCopyService(ApplicationContext applicationContext)
+        public SqlBulkCopyService(IOptions<Settings> settings, ApplicationContext applicationContext)
         {
+            _settings = settings.Value;
             _applicationContext = applicationContext;
         }
 
@@ -32,8 +35,10 @@ namespace PassportApplication.Services.CopyServices
         /// Copies from csv to database
         /// </summary>
         /// <returns>Result instance</returns>
-        public async Task<Result> CopyAsync(string filePath, FormatSettings formatSettings, CancellationToken cancellationToken)
+        public async Task<Result> CopyAsync(CancellationToken cancellationToken)
         {
+            var extractPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _settings.UpdateSettings.Directory, _settings.UpdateSettings.Extract);
+            string filePath = Directory.GetFiles(extractPath)[0];
             IDataReader reader = new CsvReader(filePath);
             using (var bulkCopy = new SqlBulkCopy(_applicationContext.Database.GetConnectionString(), SqlBulkCopyOptions.TableLock))
             {

@@ -3,16 +3,16 @@
     /// <summary>
     /// Passport changes history DTO
     /// </summary>
-    public class PassportActivityHistoryDto
+    public record PassportActivityHistoryDto
     {
         /// <summary>
         /// Change date
         /// </summary>
-        public DateOnly Date {  get; set; }
+        public DateOnly Date {  get; init; }
 
         /// <summary>
         /// Passport activity
         /// </summary>
-        public bool Active { get; set; }
+        public bool Active { get; init; }
     }
 }

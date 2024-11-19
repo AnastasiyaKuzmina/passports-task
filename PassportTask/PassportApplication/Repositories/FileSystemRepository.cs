@@ -1,6 +1,7 @@
-﻿using PassportApplication.Database;
+﻿using Microsoft.Extensions.Options;
+using PassportApplication.Database;
 using PassportApplication.Models.Dto;
-using PassportApplication.Options.FormatOptions;
+using PassportApplication.Options;
 using PassportApplication.Repositories.Interfaces;
 using PassportApplication.Results;
 using PassportApplication.Results.Generic;
@@ -12,18 +13,18 @@ namespace PassportApplication.Repositories
     /// </summary>
     public class FileSystemRepository : IRepository
     {
+        private readonly Settings _settings;
         private readonly FileSystemDatabase _fileSystemDatabase;
-        private readonly FormatSettings _formatSettings;
 
         /// <summary>
         /// Constructor of FileSystemRepository
         /// </summary>
         /// <param name="fileSystemDatabase">File system database</param>
         /// <param name="formatSettings">Format settings</param>
-        public FileSystemRepository(FileSystemDatabase fileSystemDatabase, FormatSettings formatSettings)
+        public FileSystemRepository(IOptions<Settings> settings, FileSystemDatabase fileSystemDatabase)
         {
+            _settings = settings.Value;
             _fileSystemDatabase = fileSystemDatabase;
-            _formatSettings = formatSettings;
         }
 
         /// <summary>
@@ -49,13 +50,13 @@ namespace PassportApplication.Repositories
             byteNumber = (int)(symbol / 8);
             index = (int)(symbol % 8);
 
-            if (_fileSystemDatabase.FileSystemSettings.CurrentPassportsPath)
+            if (_fileSystemDatabase.CurrentPassportsPath)
             {
-                path = _fileSystemDatabase.FileSystemSettings.PassportsPath1;
+                path = _fileSystemDatabase.PassportsPath1;
             }
             else
             {
-                path = _fileSystemDatabase.FileSystemSettings.PassportsPath2;
+                path = _fileSystemDatabase.PassportsPath2;
             }
 
             if (File.Exists(path) == false)
@@ -99,14 +100,14 @@ namespace PassportApplication.Repositories
 
             List<PassportActivityHistoryDto> result = new List<PassportActivityHistoryDto>();
 
-            List<FileSystemInfo> filesList = new DirectoryInfo(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath)
+            List<FileSystemInfo> filesList = new DirectoryInfo(_fileSystemDatabase.PassportsHistoryPath)
                 .GetFileSystemInfos()
                 .OrderBy(f => f.CreationTime)
                 .ToList();
 
             foreach (FileSystemInfo file in filesList)
             {
-                if (File.Exists(path = Path.Combine(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath, file.Name)) == false)
+                if (File.Exists(path = Path.Combine(_fileSystemDatabase.PassportsHistoryPath, file.Name)) == false)
                 {
                     return Result.Fail($"{file.Name} doesn't exist");
                 }
@@ -138,8 +139,8 @@ namespace PassportApplication.Repositories
         public async Task<Result<List<PassportChangesDto>>> GetPassportsChangesForDateAsync(short day, short month, short year, CancellationToken cancellationToken)
         {
             DateOnly date = new DateOnly(year, month, day);
-            string filePath = Path.Combine(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath, 
-                                            date.ToString(_fileSystemDatabase.FileSystemSettings.FileNameFormat) + ".txt");
+            string filePath = Path.Combine(_fileSystemDatabase.PassportsHistoryPath, 
+                                            date.ToString(_settings.FileSystemSettings.FileNameFormat) + ".txt");
 
             if (File.Exists(filePath) == false) 
             {
@@ -151,12 +152,12 @@ namespace PassportApplication.Repositories
 
             List<PassportChangesDto> result = new List<PassportChangesDto>();
 
-            string previousFilePath = Path.Combine(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath, 
-                                                    date.AddDays(-1).ToString(_fileSystemDatabase.FileSystemSettings.FileNameFormat) + ".txt");
+            string previousFilePath = Path.Combine(_fileSystemDatabase.PassportsHistoryPath, 
+                                                    date.AddDays(-1).ToString(_settings.FileSystemSettings.FileNameFormat) + ".txt");
 
             if (File.Exists(previousFilePath) == false)
             {
-                previousFilePath = _fileSystemDatabase.FileSystemSettings.PassportsTemplatePath;
+                previousFilePath = _fileSystemDatabase.PassportsTemplatePath;
             }
 
             await using (FileStream fstreamCurrent = new FileStream(filePath, FileMode.Open))
@@ -199,8 +200,8 @@ namespace PassportApplication.Repositories
 
         private bool CheckPassport(string series, string number)
         {
-            if ((_formatSettings.SeriesTemplate.IsMatch(series) == false)
-                || (_formatSettings.NumberTemplate.IsMatch(number) == false))
+            if ((_settings.FormatSettings.SeriesTemplate.IsMatch(series) == false)
+                || (_settings.FormatSettings.NumberTemplate.IsMatch(number) == false))
             {
                 return false;
             }
