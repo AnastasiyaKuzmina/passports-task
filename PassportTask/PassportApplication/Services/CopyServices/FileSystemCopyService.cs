@@ -60,20 +60,22 @@ namespace PassportApplication.Services.CopyServices
             
             File.Copy(_fileSystemDatabase.FileSystemSettings.PassportsTemplatePath, writeFilePath, true);
 
+            bool canceled = false;
+
             await Task.Run(() =>
             {
                 using (FileStream fstream = new FileStream(writeFilePath, FileMode.Open))
                 {
                     using (StreamReader sr = new StreamReader(filePath))
                     {
-                        int i = 0;
                         string? line;
                         string[] lines;
                         while ((line = sr.ReadLine()) != null)
                         {
                             if (cancellationToken.IsCancellationRequested)
                             {
-                                cancellationToken.ThrowIfCancellationRequested();
+                                canceled = true;
+                                return;
                             }
 
                             lines = line.Split(',');
@@ -99,23 +101,25 @@ namespace PassportApplication.Services.CopyServices
                         }
                     }
                 }
-
-                string newFilePath = Path.Combine(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath, 
-                                                    DateTime.Now.ToString(_fileSystemDatabase.FileSystemSettings.FileNameFormat) + ".txt");
-                File.Copy(writeFilePath, newFilePath);
-
-                if (_fileSystemDatabase.FileSystemSettings.CurrentPassportsPath)
-                {
-                    _fileSystemDatabase.FileSystemSettings.CurrentPassportsPath = false;
-                    File.Delete(_fileSystemDatabase.FileSystemSettings.PassportsPath1);
-                }
-                else
-                {
-                    _fileSystemDatabase.FileSystemSettings.CurrentPassportsPath = true;
-                    File.Delete(_fileSystemDatabase.FileSystemSettings.PassportsPath2);
-                }
             });
 
+            if (canceled) return Result.Fail("Copy was canceled");
+
+            string newFilePath = Path.Combine(_fileSystemDatabase.FileSystemSettings.PassportsHistoryPath, 
+                                                    DateTime.Now.ToString(_fileSystemDatabase.FileSystemSettings.FileNameFormat) + ".txt");
+            File.Copy(writeFilePath, newFilePath);
+
+            if (_fileSystemDatabase.FileSystemSettings.CurrentPassportsPath)
+            {
+                _fileSystemDatabase.FileSystemSettings.CurrentPassportsPath = false;
+                File.Delete(_fileSystemDatabase.FileSystemSettings.PassportsPath1);
+            }
+            else
+            {
+                _fileSystemDatabase.FileSystemSettings.CurrentPassportsPath = true;
+                File.Delete(_fileSystemDatabase.FileSystemSettings.PassportsPath2);
+            }
+            
             return Result.Ok();
         }
     }
