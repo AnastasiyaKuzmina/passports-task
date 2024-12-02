@@ -1,4 +1,12 @@
-﻿using PassportApplication.Services.Interfaces;
+﻿using YandexDisk.Client.Clients;
+using YandexDisk.Client.Http;
+using YandexDisk.Client.Protocol;
+
+using PassportApplication.Results;
+using PassportApplication.Services.Interfaces;
+using Microsoft.Extensions.Options;
+using PassportApplication.Options;
+using System.Diagnostics;
 
 namespace PassportApplication.Services
 {
@@ -7,35 +15,64 @@ namespace PassportApplication.Services
     /// </summary>
     public class FileDownloadService : IFileDownloadService
     {
+        private readonly Settings _settings;
+        public FileDownloadService(IOptions<Settings> settings)
+        {
+            _settings = settings.Value;
+        }
+
         /// <summary>
         /// Downloads a csv file
         /// </summary>
-        /// <param name="url">File's url</param>
-        /// <param name="DirectoryPath">Directory path</param>
-        /// <param name="FilePath">File path</param>
-        /// <returns></returns>
-        public async Task DownloadFileAsync(string url, string DirectoryPath, string FilePath)
+        /// <param name="yandexToken">Yandex token</param>
+        /// <param name="yandexDirectory">Yandex disk directory</param>
+        /// <param name="yandexFileName">Yandex file name</param>
+        /// <param name="directoryPath">Directory path</param>
+        /// <param name="filePath">File path</param>
+        /// <returns>Result instance</returns>
+        public async Task<Result> DownloadFileAsync(CancellationToken cancellationToken)
         {
-            if (Directory.Exists(DirectoryPath) == false)
-            {
-                Directory.CreateDirectory(DirectoryPath);
-            }
-            else
-            {
-                Directory.Delete(DirectoryPath, true);
-                Directory.CreateDirectory(DirectoryPath);
-            }
+            var directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _settings.UpdateSettings.Directory);
+            var filePath = Path.Combine(directoryPath, _settings.UpdateSettings.File);
 
-            using (var httpClient = new HttpClient())
+            if (Directory.Exists(directoryPath))
             {
-                using (var response = await httpClient.GetStreamAsync(url))
-                {
-                    using (var fileStream = new FileStream(FilePath, FileMode.Create, FileAccess.Write, FileShare.None))
-                    {
-                        await response.CopyToAsync(fileStream);
-                    }
-                }
+                Directory.Delete(directoryPath, true);
             }
+            Directory.CreateDirectory(directoryPath);
+
+            var apiConnection = new DiskHttpApi(_settings.UpdateSettings.YandexSettings.Token);
+            if (apiConnection == null) return Result.Fail("Incorrect Yandex Disk token");
+
+            var rootFolderData = await apiConnection.MetaInfo.GetInfoAsync(new ResourceRequest
+            {
+                Path = "/" + _settings.UpdateSettings.YandexSettings.Directory + "/"
+            }, cancellationToken);
+
+            if (rootFolderData == null) return Result.Fail("Incorrect Yandex Disk path");
+
+            Resource? data = rootFolderData.Embedded.Items.FirstOrDefault(i => 
+            i.Name == _settings.UpdateSettings.YandexSettings.FileName);
+            if (data == null) return Result.Fail("No Data.zip file in Yandex disk");
+
+            await apiConnection.Files.DownloadFileAsync(data.Path, filePath, cancellationToken);
+
+            return Result.Ok();
+
+            //using (var httpClient = new HttpClient())
+            //{
+            //    using (var response = await httpClient.GetAsync(url))
+            //    {
+            //        if (response.IsSuccessStatusCode == false)
+            //        {
+            //            return new Result(new Error(ErrorType.HttpClientError, "Unable to download the file"));
+            //        }
+            //        using (var fileStream = new FileStream(FilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+            //        {
+            //            await response.Content.CopyToAsync(fileStream);
+            //        }
+            //    }
+            //}
         }
     }
 }

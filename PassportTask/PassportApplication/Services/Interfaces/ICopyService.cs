@@ -1,4 +1,6 @@
-﻿namespace PassportApplication.Services.Interfaces
+﻿using PassportApplication.Results;
+
+namespace PassportApplication.Services.Interfaces
 {
     /// <summary>
     /// Database management interface
@@ -6,9 +8,9 @@
     public interface ICopyService
     {
         /// <summary>
-        /// Updates the database
+        /// Copies from csv to database
         /// </summary>
-        /// <returns></returns>
-        public Task CopyAsync(string FilePath);
+        /// <returns>Result instance</returns>
+        public Task<Result> CopyAsync(CancellationToken cancellationToken);
     }
 }

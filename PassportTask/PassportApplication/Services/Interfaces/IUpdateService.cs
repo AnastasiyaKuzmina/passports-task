@@ -1,4 +1,6 @@
-﻿namespace PassportApplication.Services.Interfaces
+﻿using PassportApplication.Results;
+
+namespace PassportApplication.Services.Interfaces
 {
     /// <summary>
     /// Update service interface
@@ -8,7 +10,7 @@
         /// <summary>
         /// Updates database
         /// </summary>
-        /// <returns></returns>
-        public Task UpdateAsync();
+        /// <returns>Result instance</returns>
+        public Task<Result> UpdateAsync(CancellationToken cancellationToken);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace PassportApplication.Services.Interfaces
+﻿using PassportApplication.Results;
+
+namespace PassportApplication.Services.Interfaces
 {
     /// <summary>
     /// File download interface
@@ -8,10 +10,12 @@
         /// <summary>
         /// Downloads a csv file
         /// </summary>
-        /// <param name="url">File's url</param>
-        /// <param name="DirectoryPath">Directory path</param>
-        /// <param name="FilePath">File path</param>
-        /// <returns></returns>
-        public Task DownloadFileAsync(string url, string DirectoryPath, string FilePath);
+        /// <param name="yandexToken">Yandex token</param>
+        /// <param name="yandexDirectory">Yandex disk directory</param>
+        /// <param name="yandexFileName">Yandex file name</param>
+        /// <param name="directoryPath">Directory path</param>
+        /// <param name="filePath">File path</param>
+        /// <returns>Result instance</returns>
+        public Task<Result> DownloadFileAsync(CancellationToken cancellationToken);
     }
 }

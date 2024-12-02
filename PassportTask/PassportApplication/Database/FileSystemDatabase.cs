@@ -1,5 +1,7 @@
-﻿using PassportApplication.Options.DatabaseOptions;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.Options;
+using PassportApplication.Options;
+using PassportApplication.Options.DatabaseOptions;
 
 namespace PassportApplication.Database
 {
@@ -11,40 +13,62 @@ namespace PassportApplication.Database
         const long bytesNumber = 1250000000;
         private static readonly byte[] initializeByte = { 255 };
 
-        /// <summary>
-        /// File system settings
-        /// </summary>
-        public FileSystemSettings FileSystemSettings { get; set; }
+        private readonly FileSystemSettings _fileSystemSettings;
+
+        public string DatabasePath { get; init; }
+        public string PassportsHistoryPath { get; init; }
+        public bool CurrentPassportsPath { get; set; }
+        public string PassportsTemplatePath { get; init; }
+        public string PassportsPath1 { get; init; }
+        public string PassportsPath2 { get; init; }
 
         /// <summary>
         /// Constructor of FileSystemDatabase
         /// </summary>
         /// <param name="fileSystemSettings">File system settings</param>
-        public FileSystemDatabase(FileSystemSettings fileSystemSettings) 
+        public FileSystemDatabase(IOptions<Settings> settings) 
         {
-            FileSystemSettings = fileSystemSettings;
+            _fileSystemSettings = settings.Value.FileSystemSettings;
+            DatabasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, 
+                _fileSystemSettings.Directory, _fileSystemSettings.Database);
+            PassportsHistoryPath = Path.Combine(DatabasePath, _fileSystemSettings.PassportsHistory);
+            PassportsTemplatePath = Path.Combine(DatabasePath, _fileSystemSettings.PassportsTemplate);
+            PassportsPath1 = Path.Combine(DatabasePath, _fileSystemSettings.Passports1);
+            PassportsPath2 = Path.Combine(DatabasePath, _fileSystemSettings.Passports2);
             EnsureCreated();
         }
 
         private void EnsureCreated()
         {
-            if (Directory.Exists(FileSystemSettings.DatabasePath) == false) 
+            if (Directory.Exists(DatabasePath) == false) 
             {
-                Directory.CreateDirectory(FileSystemSettings.DatabasePath);
-                File.Create(FileSystemSettings.PassportsHistoryPath);
+                Directory.CreateDirectory(DatabasePath);
+                Directory.CreateDirectory(PassportsHistoryPath);
                 InitializePassportsFile();
-
+                CurrentPassportsPath = true;
+                File.Copy(PassportsTemplatePath, PassportsPath1);
                 return;
             }
 
-            if (File.Exists(FileSystemSettings.PassportsPath) == false)
+            if (File.Exists(PassportsTemplatePath) == false)
             {
                 InitializePassportsFile();
             }
 
-            if (File.Exists(FileSystemSettings.PassportsHistoryPath) == false)
+            if (((File.Exists(PassportsPath1) == false) && (File.Exists(PassportsPath2) == false)) ||
+                ((File.Exists(PassportsPath1) == true) && (File.Exists(PassportsPath2) == true)) ||
+                (Directory.Exists(PassportsHistoryPath) == false))
             {
-                File.Create(FileSystemSettings.PassportsHistoryPath);
+                throw new Exception();
+            }
+
+            if ((File.Exists(PassportsPath1) == false) && (File.Exists(PassportsPath2) == true))
+            {
+                CurrentPassportsPath = false;
+            }
+            else
+            {
+                CurrentPassportsPath = true;
             }
         }
 
@@ -53,7 +77,7 @@ namespace PassportApplication.Database
             Debug.WriteLine("Start Initialization");
             Stopwatch sw = Stopwatch.StartNew();
             
-            using (FileStream fstream = new FileStream(FileSystemSettings.PassportsPath, FileMode.Create))
+            using (FileStream fstream = new FileStream(PassportsTemplatePath, FileMode.Create))
             {
                 for (long j = 0; j < bytesNumber; j++)
                 {

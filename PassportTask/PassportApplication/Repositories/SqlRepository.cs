@@ -1,0 +1,76 @@
+﻿using Mapster;
+
+using PassportApplication.Database;
+using PassportApplication.Models;
+using Microsoft.Extensions.Options;
+using PassportApplication.Models.Dto;
+using PassportApplication.Options;
+using PassportApplication.Repositories.Interfaces;
+using PassportApplication.Results;
+using PassportApplication.Results.Generic;
+
+namespace PassportApplication.Repositories
+{
+    /// <summary>
+    /// Implements IRepository
+    /// </summary>
+    public class SqlRepository : IRepository
+    {
+        private readonly ApplicationContext _applicationContext;
+        private readonly Settings _settings;
+
+        /// <summary>
+        /// Constructor of SqlRepository
+        /// </summary>
+        /// <param name="applicationContext">Application context</param>
+        /// <param name="formatSettings">Format settings</param>
+        public SqlRepository(IOptions<Settings> settings, ApplicationContext applicationContext)
+        {
+            _settings = settings.Value;
+            _applicationContext = applicationContext;
+        }
+
+        /// <summary>
+        /// IRepository.GetPassportActivityAsync implementation
+        /// </summary>
+        /// <param name="series">Passport series</param>
+        /// <param name="number">Passport number</param>
+        /// <returns>Passport's activity status</returns>
+        public async Task<Result<PassportDto>> GetPassportActivityAsync(string series, string number, CancellationToken cancellationToken)
+        {
+            if ((_settings.FormatSettings.SeriesTemplate.IsMatch(series) == false) 
+                || (_settings.FormatSettings.NumberTemplate.IsMatch(number) == false))
+            {
+                return Result.Fail("Wrong passport format");
+            }
+
+            Passport? passport = await _applicationContext.Passports.FindAsync(short.Parse(series), int.Parse(number));
+            return Result<PassportDto>.Ok(passport.Adapt<PassportDto>());
+        }
+
+        /// <summary>
+        /// IRepository.GetPassportHistoryAsync implementation
+        /// </summary>
+        /// <param name="series">Passport series</param>
+        /// <param name="number">Passport number</param>
+        /// <returns>Passport's history</returns>
+        public Task<Result<List<PassportActivityHistoryDto>>> GetPassportHistoryAsync(string series, string number, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// IRepository.GetPassportsChangesForDateAsync implementation
+        /// </summary>
+        /// <param name="day">Day</param>
+        /// <param name="month">Month</param>
+        /// <param name="year">Year</param>
+        /// <returns>Passports' changes for date</returns>
+        public Task<Result<List<PassportChangesDto>>> GetPassportsChangesForDateAsync(short day, short month, short year, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        
+    }
+}

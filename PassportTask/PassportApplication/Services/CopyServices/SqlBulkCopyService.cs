@@ -4,8 +4,12 @@ using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 
+using PassportApplication.Database;
 using PassportApplication.Readers;
+using PassportApplication.Results;
 using PassportApplication.Services.Interfaces;
+using PassportApplication.Options;
+using Microsoft.Extensions.Options;
 
 namespace PassportApplication.Services.CopyServices
 {
@@ -14,45 +18,43 @@ namespace PassportApplication.Services.CopyServices
     /// </summary>
     public class SqlBulkCopyService : ICopyService
     {
-        private readonly IConfiguration _configuration;
+        private readonly Settings _settings;
+        private readonly ApplicationContext _applicationContext;
 
         /// <summary>
         /// Constructor of SqlBulkCopyService
         /// </summary>
         /// <param name="applicationContext">Application context</param>
-        public SqlBulkCopyService(IConfiguration configuration)
+        public SqlBulkCopyService(IOptions<Settings> settings, ApplicationContext applicationContext)
         {
-            _configuration = configuration;
+            _settings = settings.Value;
+            _applicationContext = applicationContext;
         }
 
         /// <summary>
         /// Copies from csv to database
         /// </summary>
-        /// <returns></returns>
-        public async Task CopyAsync(string FilePath)
+        /// <returns>Result instance</returns>
+        public async Task<Result> CopyAsync(CancellationToken cancellationToken)
         {
-            IDataReader reader = new CsvReader(FilePath);
-            try
+            var extractPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _settings.UpdateSettings.Directory, _settings.UpdateSettings.Extract);
+            string filePath = Directory.GetFiles(extractPath)[0];
+            IDataReader reader = new CsvReader(filePath);
+            using (var bulkCopy = new SqlBulkCopy(_applicationContext.Database.GetConnectionString(), SqlBulkCopyOptions.TableLock))
             {
-                using (var bulkCopy = new SqlBulkCopy(_configuration.GetConnectionString("SqlConnection"), SqlBulkCopyOptions.TableLock))
-                {
-                    bulkCopy.DestinationTableName = "[passportsdb].[dbo].[Passports]";
-                    bulkCopy.ColumnMappings.Add(0, 1);
-                    bulkCopy.ColumnMappings.Add(1, 2);
-                    bulkCopy.BulkCopyTimeout = 0;
-                    bulkCopy.BatchSize = 10000;
+                bulkCopy.DestinationTableName = "[passportsdb].[dbo].[Passports]";
+                bulkCopy.ColumnMappings.Add(0, 1);
+                bulkCopy.ColumnMappings.Add(1, 2);
+                bulkCopy.BulkCopyTimeout = 0;
+                bulkCopy.BatchSize = 10000;
 
-                    Stopwatch sw = new Stopwatch();
-                    sw.Start();
-                    await bulkCopy.WriteToServerAsync(reader);
-                    sw.Stop();
-                    Debug.WriteLine("End! {0}", sw.Elapsed.TotalSeconds);
-                }
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                await bulkCopy.WriteToServerAsync(reader);
+                sw.Stop();
+                Debug.WriteLine("End! {0}", sw.Elapsed.TotalSeconds);
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
+            return Result.Ok();
         }
     }
 }

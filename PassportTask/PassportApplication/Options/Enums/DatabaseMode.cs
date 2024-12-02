@@ -8,14 +8,14 @@
         /// <summary>
         /// File system mode 
         /// </summary>
-        FileSystem,
+        FileSystem = 1,
         /// <summary>
         /// PostgreSql mode
         /// </summary>
-        PostgreSql,
+        PostgreSql = 2,
         /// <summary>
         /// MsSql mode
         /// </summary>
-        MsSql
+        MsSql = 3
     }
 }

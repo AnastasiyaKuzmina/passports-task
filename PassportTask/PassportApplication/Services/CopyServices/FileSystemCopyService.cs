@@ -1,7 +1,8 @@
-﻿using System.Text.RegularExpressions;
-using System.Diagnostics;
-using PassportApplication.Services.Interfaces;
+﻿using Microsoft.Extensions.Options;
 using PassportApplication.Database;
+using PassportApplication.Options;
+using PassportApplication.Results;
+using PassportApplication.Services.Interfaces;
 
 namespace PassportApplication.Services.CopyServices
 {
@@ -10,17 +11,16 @@ namespace PassportApplication.Services.CopyServices
     /// </summary>
     public class FileSystemCopyService : ICopyService
     {
-        private readonly Regex seriesTemplate = new Regex(@"\d{4}");
-        private readonly Regex numberTemplate = new Regex(@"\d{6}");
-
+        private readonly Settings _settings;
         private readonly FileSystemDatabase _fileSystemDatabase;
 
         /// <summary>
         /// Constructor of FileSystemCopyService
         /// </summary>
         /// <param name="fileSystemDatabase">File system database</param>
-        public FileSystemCopyService(FileSystemDatabase fileSystemDatabase)
+        public FileSystemCopyService(IOptions<Settings> settings, FileSystemDatabase fileSystemDatabase)
         {
+            _settings = settings.Value;
             _fileSystemDatabase = fileSystemDatabase;
         }
 
@@ -28,37 +28,62 @@ namespace PassportApplication.Services.CopyServices
         /// Copies from csv to database
         /// </summary>
         /// <param name="FilePath">File path</param>
-        /// <returns></returns>
-        public async Task CopyAsync(string FilePath)
+        /// <returns>Result instance</returns>
+        public async Task<Result> CopyAsync(CancellationToken cancellationToken)
         {
+            var extractPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _settings.UpdateSettings.Directory, _settings.UpdateSettings.Extract);
+            string filePath = Directory.GetFiles(extractPath)[0];
+            if (File.Exists(filePath) == false)
+            {
+                return Result.Fail("File for copy doesn't exist");
+            }
+
             long symbol;
             int byteNumber, index;
             char[] binaryNumber;
             byte[] bytesToRead = new byte[1];
+            
+            string writeFilePath;
 
-            Debug.WriteLine("Start Copy!");
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            if (_fileSystemDatabase.CurrentPassportsPath)
+            {
+                var passportsPath2 = 
+                writeFilePath = _fileSystemDatabase.PassportsPath2;
+            } 
+            else
+            {
+                writeFilePath = _fileSystemDatabase.PassportsPath1;
+            }
+
+            if (File.Exists(_fileSystemDatabase.PassportsTemplatePath) == false)
+            {
+                return Result.Fail("Passports template file doesn't exist");
+            }
+            
+            File.Copy(_fileSystemDatabase.PassportsTemplatePath, writeFilePath, true);
+
+            bool canceled = false;
 
             await Task.Run(() =>
             {
-                using (FileStream fstream = new FileStream(_fileSystemDatabase.FileSystemSettings.PassportsPath, FileMode.Open))
+                using (FileStream fstream = new FileStream(writeFilePath, FileMode.Open))
                 {
-                    using (StreamReader sr = new StreamReader(FilePath))
+                    using (StreamReader sr = new StreamReader(filePath))
                     {
-                        int i = 0;
                         string? line;
                         string[] lines;
                         while ((line = sr.ReadLine()) != null)
                         {
-                            i++;
-                            if (i % 1000000 == 0)
+                            if (cancellationToken.IsCancellationRequested)
                             {
-                                Debug.WriteLine(i);
+                                canceled = true;
+                                return;
                             }
+
                             lines = line.Split(',');
 
-                            if ((seriesTemplate.IsMatch(lines[0]) == false) || (numberTemplate.IsMatch(lines[1]) == false))
+                            if ((_settings.FormatSettings.SeriesTemplate.IsMatch(lines[0]) == false) 
+                            || (_settings.FormatSettings.NumberTemplate.IsMatch(lines[1]) == false))
                             {
                                 continue;
                             }
@@ -81,8 +106,24 @@ namespace PassportApplication.Services.CopyServices
                 }
             });
 
-            sw.Stop();
-            Debug.WriteLine("End Copy {0}", sw.Elapsed.TotalSeconds);
+            if (canceled) return Result.Fail("Copy was canceled");
+
+            string newFilePath = Path.Combine(_fileSystemDatabase.PassportsHistoryPath, 
+                                                    DateTime.Now.ToString(_settings.FileSystemSettings.FileNameFormat) + ".txt");
+            File.Copy(writeFilePath, newFilePath);
+
+            if (_fileSystemDatabase.CurrentPassportsPath)
+            {
+                File.Delete(_fileSystemDatabase.PassportsPath1);
+            }
+            else
+            {
+                File.Delete(_fileSystemDatabase.PassportsPath2);
+            }
+
+            _fileSystemDatabase.CurrentPassportsPath = !_fileSystemDatabase.CurrentPassportsPath;
+
+            return Result.Ok();
         }
     }
 }

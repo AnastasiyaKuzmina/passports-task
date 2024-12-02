@@ -1,5 +1,7 @@
 ﻿using Quartz;
+using System.Diagnostics;
 using PassportApplication.Services.Interfaces;
+
 
 namespace PassportApplication.Quartz.Jobs
 {
@@ -26,7 +28,19 @@ namespace PassportApplication.Quartz.Jobs
         /// <returns></returns>
         public async Task Execute(IJobExecutionContext context)
         {
-            await _updateService.UpdateAsync();
+            var cancellationToken = context.CancellationToken;
+
+            var updateResult = await _updateService.UpdateAsync(cancellationToken);
+
+            if (updateResult.IsSuccess == false) 
+            {
+                Debug.WriteLine("Unsuccess update: " + updateResult.Error?.Message);
+            }
+            else
+            {
+                Debug.WriteLine("Success update");
+            }
+
         }
     }
 }

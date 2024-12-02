@@ -1,8 +1,6 @@
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
-
-using PassportApplication.Database;
-using PassportApplication.Models;
+using PassportApplication.Models.Dto;
+using PassportApplication.Repositories.Interfaces;
 
 namespace PassportApplication.Controllers
 {
@@ -13,30 +11,66 @@ namespace PassportApplication.Controllers
     [Route("[controller]")]
     public class PassportsController : ControllerBase
     {
-        private readonly ApplicationContext _applicationContext;
+        private readonly IRepository _repository;
 
-        public PassportsController(ApplicationContext applicationContext)
+        public PassportsController(IRepository repository)
         {
-            _applicationContext = applicationContext;
+            _repository = repository;
         }
 
         /// <summary>
-        /// Gets passport's activity
+        /// Gets passport's current activity status
         /// </summary>
         /// <param name="series">Passport series</param>
         /// <param name="number">Passport number</param>
-        /// <returns></returns>
+        /// <returns>Passport's current activity status</returns>
         [HttpGet]
-        public IActionResult GetPassportActivity(string series, string number)
+        [Route("GetPassportActivity")]
+        public async Task<ActionResult<PassportDto>> GetPassportActivity(string? series, string? number, CancellationToken cancellationToken)
         {
-            Passport? passport = _applicationContext.Passports.Find(series, number);
-
-            if (passport == null)
+            if ((series == null) || (number == null)) 
             {
-                return NotFound();
+                return new BadRequestResult();
             }
+            var result = await _repository.GetPassportActivityAsync(series, number, cancellationToken);
+            return result;
+        }
 
-            return new OkObjectResult(passport.Adapt<PassportDto>());
+        /// <summary>
+        /// Gets passport's activity history
+        /// </summary>
+        /// <param name="series">Passport series</param>
+        /// <param name="number">Passport number</param>
+        /// <returns>Passport's history</returns>
+        [HttpGet]
+        [Route("GetPassportHistory")]
+        public async Task<ActionResult<List<PassportActivityHistoryDto>>> GetPassportHistory(string? series, string? number, CancellationToken cancellationToken)
+        {
+            if ((series == null) || (number == null))
+            {
+                return new BadRequestResult();
+            }
+            var result = await _repository.GetPassportHistoryAsync(series, number, cancellationToken);
+            return result;
+        }
+
+        /// <summary>
+        /// Gets passports' changes for date
+        /// </summary>
+        /// <param name="day">Day</param>
+        /// <param name="month">Month</param>
+        /// <param name="year">Year</param>
+        /// <returns>Passports' changes for date</returns>
+        [HttpGet]
+        [Route("GetPassportsChangesForDate")]
+        public async Task<ActionResult<List<PassportChangesDto>>> GetPassportsChangesForDate(short? day, short? month, short? year, CancellationToken cancellationToken)
+        {
+            if ((day == null) || (month == null) || (year == null))
+            {
+                return new BadRequestResult();
+            }
+            var result = await _repository.GetPassportsChangesForDateAsync((short)day, (short)month, (short)year, cancellationToken);
+            return result;
         }
     }
 }

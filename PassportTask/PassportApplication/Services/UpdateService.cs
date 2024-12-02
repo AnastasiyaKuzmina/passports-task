@@ -1,6 +1,5 @@
-﻿using PassportApplication.Options.UpdateOptions;
+﻿using PassportApplication.Results;
 using PassportApplication.Services.Interfaces;
-using System.Diagnostics;
 
 namespace PassportApplication.Services
 {
@@ -9,7 +8,6 @@ namespace PassportApplication.Services
     /// </summary>
     public class UpdateService : IUpdateService
     {
-        private readonly UpdateSettings _updateSettings;
         private readonly IFileDownloadService _fileDownloadService;
         private readonly IUnpackService _unpackService;
         private readonly ICopyService _copyService;
@@ -21,9 +19,8 @@ namespace PassportApplication.Services
         /// <param name="unpackService">File unpack service</param>
         /// <param name="parserService">Parser service</param>
         /// <param name="databaseService">Database update service</param>
-        public UpdateService(UpdateSettings updateSettings, IFileDownloadService fileDownloadService, IUnpackService unpackService, ICopyService copyService)
+        public UpdateService(IFileDownloadService fileDownloadService, IUnpackService unpackService, ICopyService copyService)
         {
-            _updateSettings = updateSettings;
             _fileDownloadService = fileDownloadService;
             _unpackService = unpackService;
             _copyService = copyService;
@@ -32,12 +29,20 @@ namespace PassportApplication.Services
         /// <summary>
         /// Updates database 
         /// </summary>
-        /// <returns></returns>
-        public async Task UpdateAsync()
+        /// <returns>Result instance</returns>
+        public async Task<Result> UpdateAsync(CancellationToken cancellationToken)
         {
-            //await _fileDownloadService.DownloadFileAsync(_updateSettings.FileUrl, _updateSettings.DirectoryPath, _updateSettings.FilePath);
-            //await _unpackService.UnpackAsync(_updateSettings.FilePath, _updateSettings.ExtractPath);
-            //await _copyService.CopyAsync(Directory.GetFiles(_updateSettings.ExtractPath)[0]);
+            var fileDownloadResult = await _fileDownloadService.DownloadFileAsync(cancellationToken);
+
+            if (fileDownloadResult.IsSuccess == false) return fileDownloadResult;
+
+            var unpackResult = _unpackService.Unpack();
+            if (unpackResult.IsSuccess == false) return unpackResult;
+
+            var copyResult = await _copyService.CopyAsync(cancellationToken);
+            if (copyResult.IsSuccess == false) return copyResult;
+
+            return Result.Ok();
         }
     }
 }
