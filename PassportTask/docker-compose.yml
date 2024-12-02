@@ -1,0 +1,22 @@
+version: '3.9'
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+    depends_on: 
+      - postgresql
+    restart: always
+  postgresql:
+    image: postgres
+    volumes: 
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: passports_db
+    ports:
+      - "5432:5432"
