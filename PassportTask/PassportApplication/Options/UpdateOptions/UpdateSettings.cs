@@ -23,41 +23,5 @@ namespace PassportApplication.Options.UpdateOptions
         /// Extract path
         /// </summary>
         public string Extract { get; init; }
-
-        ///// <summary>
-        ///// Constructor of UpdateSettings
-        ///// </summary>
-        ///// <param name="configuration">Configuration</param>
-        //public UpdateSettings(IConfiguration configuration)
-        //{
-        //    YandexSettings = new YandexSettings(configuration);
-        //    DirectoryPath = GetDirectoryPath(configuration);
-        //    FilePath = GetFilePath(configuration);
-        //    ExtractPath = GetExtractPath(configuration);
-        //}
-
-        //private string GetDirectoryPath(IConfiguration configuration)
-        //{
-        //    var path = configuration.GetSection("DatabaseUpdate").GetSection("Directory").Value;
-        //    if (path == null) throw new NotImplementedException();
-
-        //    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
-        //}
-
-        //private string GetFilePath(IConfiguration configuration)
-        //{
-        //    var path = configuration.GetSection("DatabaseUpdate").GetSection("ZipFile").Value;
-        //    if (path == null) throw new NotImplementedException();
-
-        //    return Path.Combine(DirectoryPath, path);
-        //}
-
-        //private string GetExtractPath(IConfiguration configuration)
-        //{
-        //    var path = configuration.GetSection("DatabaseUpdate").GetSection("ExtractDirectory").Value;
-        //    if (path == null) throw new NotImplementedException();
-
-        //    return Path.Combine(DirectoryPath, path);
-        //}
     }
 }

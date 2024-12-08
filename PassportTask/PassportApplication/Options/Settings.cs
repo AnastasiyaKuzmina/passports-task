@@ -40,44 +40,5 @@ namespace PassportApplication.Options
         /// Format settings
         /// </summary>
         public FormatSettings FormatSettings { get; init; } = new FormatSettings();
-
-        ///// <summary>
-        ///// Constructor of Settings
-        ///// </summary>
-        ///// <param name="configuration"></param>
-        //public Settings(IConfiguration configuration) 
-        //{ 
-        //    DatabaseMode = GetDatabaseMode(configuration);
-        //    DatabaseSettings = GetDatabaseSettings(configuration);
-        //    UpdateSettings = new UpdateSettings(configuration);
-        //    FormatSettings = new FormatSettings();
-        //}
-
-        //private DatabaseMode GetDatabaseMode(IConfiguration configuration)
-        //{
-        //    var stringDatabaseMode = configuration.GetSection("Database").Value ?? "";
-
-        //    if (Enum.TryParse(stringDatabaseMode, out DatabaseMode databaseMode) == false)
-        //    {
-        //        throw new NotImplementedException();
-        //    }
-
-        //    return databaseMode;
-        //}
-
-        //private IDatabaseSettings GetDatabaseSettings(IConfiguration configuration)
-        //{
-        //    switch (DatabaseMode)
-        //    {
-        //        case DatabaseMode.FileSystem:
-        //            return new FileSystemSettings(configuration);
-        //        case DatabaseMode.PostgreSql:
-        //            return new PostgreSqlSettings(configuration);
-        //        case DatabaseMode.MsSql:
-        //            return new MsSqlSettings(configuration);
-        //        default: 
-        //            throw new NotImplementedException();
-        //    }
-        //}
     }
 }
