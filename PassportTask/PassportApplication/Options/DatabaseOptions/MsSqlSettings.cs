@@ -1,6 +1,4 @@
-﻿using PassportApplication.Options.DatabaseOptions.Interfaces;
-
-namespace PassportApplication.Options.DatabaseOptions
+﻿namespace PassportApplication.Options.DatabaseOptions
 {
     /// <summary>
     /// Implements IDatabaseSettings

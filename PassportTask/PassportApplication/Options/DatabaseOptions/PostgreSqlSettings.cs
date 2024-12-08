@@ -8,6 +8,5 @@
         /// <summary>
         /// Connection string
         /// </summary>
-        public string ConnectionString { get; init; }
     }
 }

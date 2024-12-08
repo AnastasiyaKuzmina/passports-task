@@ -1,6 +1,4 @@
-﻿using PassportApplication.Options.DatabaseOptions.Interfaces;
-
-namespace PassportApplication.Options.DatabaseOptions
+﻿namespace PassportApplication.Options.DatabaseOptions
 {
     /// <summary>
     /// Implements IDatabaseSettings
@@ -10,12 +8,12 @@ namespace PassportApplication.Options.DatabaseOptions
         /// <summary>
         /// Directory
         /// </summary>
-        public string Directory { get; init; }
+        public string Directory {  get; init; }
 
         /// <summary>
         /// Database name
         /// </summary>
-        public string Database { get; init; }
+        public string Database {  get; init; }
 
         /// <summary>
         /// Current passports path: true if PassportsPath, false if PassportsPath2
@@ -45,6 +43,6 @@ namespace PassportApplication.Options.DatabaseOptions
         /// <summary>
         /// File name format
         /// </summary>
-        public string FileNameFormat { get; init; }
+        public string FileNameFormat = "dd-MM-yyyy";
     }
 }

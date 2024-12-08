@@ -3,8 +3,7 @@ using Microsoft.Extensions.Options;
 using Npgsql;
 
 using PassportApplication.Database;
-using PassportApplication.Options;
-
+using PassportApplication.Options.UpdateOptions;
 using PassportApplication.Results;
 using PassportApplication.Services.Interfaces;
 
@@ -15,16 +14,16 @@ namespace PassportApplication.Services.CopyServices
     /// </summary>
     public class PostgreSqlCopyService : ICopyService
     {
-        private readonly Settings _settings;
+        private readonly UpdateSettings _updateSettings;
         private readonly ApplicationContext _applicationContext;
 
         /// <summary>
         /// Constructor of PostgreSqlCopyService
         /// </summary>
         /// <param name="applicationContext">Application context</param>
-        public PostgreSqlCopyService(IOptions<Settings> settings, ApplicationContext applicationContext)
+        public PostgreSqlCopyService(IOptions<UpdateSettings> updateSettings, ApplicationContext applicationContext)
         {
-            _settings = settings.Value;
+            _updateSettings = updateSettings.Value;
             _applicationContext = applicationContext;
         }
 
@@ -35,7 +34,7 @@ namespace PassportApplication.Services.CopyServices
         /// <returns>Result instance</returns>
         public async Task<Result> CopyAsync(CancellationToken cancellationToken)
         {
-            var extractPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _settings.UpdateSettings.Directory, _settings.UpdateSettings.Extract);
+            var extractPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _updateSettings.Directory, _updateSettings.Extract);
             string filePath = Directory.GetFiles(extractPath)[0];
 
             await using (NpgsqlConnection connection = new NpgsqlConnection(_applicationContext.Database.GetConnectionString()))

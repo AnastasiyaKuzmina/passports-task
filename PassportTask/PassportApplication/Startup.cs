@@ -3,8 +3,8 @@ using MapsterMapper;
 
 using PassportApplication.Extensions;
 using PassportApplication.Options;
-using PassportApplication.Options.Enums;
-using System.Diagnostics;
+using PassportApplication.Options.DatabaseOptions;
+using PassportApplication.Options.FormatOptions;
 
 namespace PassportApplication
 {
@@ -21,20 +21,12 @@ namespace PassportApplication
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-
-            if (!Enum.TryParse(Configuration.GetSection("Settings").GetSection("DatabaseMode").Value, true, out DatabaseMode dm))
-            {
-                throw new NotImplementedException();
-            }
-
-            DatabaseMode = dm;
         }
 
         /// <summary>
         /// Builder configuration
         /// </summary>
         public IConfiguration Configuration { get; }
-        public DatabaseMode DatabaseMode { get; set; }
 
         /// <summary>
         /// Services setup
@@ -42,14 +34,15 @@ namespace PassportApplication
         /// <param name="services">Instance of an object implementing IServiceCollection</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            var settings = Configuration.GetSection("Settings").Get<Settings>();
-            services.Configure<Settings>(Configuration.GetSection("Settings"));
+            Settings? settings = Configuration.GetSection("Settings").Get<Settings>();
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            services.AddQuartzService(settings!, Configuration);
-            services.AddDatabase(settings!);
-            services.AddRepository(settings!);
+            services.Configure<FileSystemSettings>(Configuration.GetSection("FileSystemSettings"));
+            services.AddSingleton(new FormatSettings());
+            services.AddQuartzService(settings, Configuration);
+            services.AddDatabase(settings);
+            services.AddRepository(settings);
             services.AddSingleton(TypeAdapterConfig.GlobalSettings);
             services.AddScoped<IMapper, ServiceMapper>();
         }

@@ -1,10 +1,10 @@
 ﻿using Mapster;
+using Microsoft.Extensions.Options;
 
 using PassportApplication.Database;
 using PassportApplication.Models;
-using Microsoft.Extensions.Options;
 using PassportApplication.Models.Dto;
-using PassportApplication.Options;
+using PassportApplication.Options.FormatOptions;
 using PassportApplication.Repositories.Interfaces;
 using PassportApplication.Results;
 using PassportApplication.Results.Generic;
@@ -17,16 +17,16 @@ namespace PassportApplication.Repositories
     public class SqlRepository : IRepository
     {
         private readonly ApplicationContext _applicationContext;
-        private readonly Settings _settings;
+        private readonly FormatSettings _formatSettings;
 
         /// <summary>
         /// Constructor of SqlRepository
         /// </summary>
         /// <param name="applicationContext">Application context</param>
         /// <param name="formatSettings">Format settings</param>
-        public SqlRepository(IOptions<Settings> settings, ApplicationContext applicationContext)
+        public SqlRepository(IOptions<FormatSettings> formatSettings, ApplicationContext applicationContext)
         {
-            _settings = settings.Value;
+            _formatSettings = formatSettings.Value;
             _applicationContext = applicationContext;
         }
 
@@ -38,8 +38,8 @@ namespace PassportApplication.Repositories
         /// <returns>Passport's activity status</returns>
         public async Task<Result<PassportDto>> GetPassportActivityAsync(string series, string number, CancellationToken cancellationToken)
         {
-            if ((_settings.FormatSettings.SeriesTemplate.IsMatch(series) == false) 
-                || (_settings.FormatSettings.NumberTemplate.IsMatch(number) == false))
+            if ((_formatSettings.SeriesTemplate.IsMatch(series) == false) 
+                || (_formatSettings.NumberTemplate.IsMatch(number) == false))
             {
                 return Result.Fail("Wrong passport format");
             }

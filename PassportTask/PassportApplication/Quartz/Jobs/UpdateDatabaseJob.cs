@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using PassportApplication.Services.Interfaces;
 
-
 namespace PassportApplication.Quartz.Jobs
 {
     /// <summary>
@@ -40,7 +39,6 @@ namespace PassportApplication.Quartz.Jobs
             {
                 Debug.WriteLine("Success update");
             }
-
         }
     }
 }

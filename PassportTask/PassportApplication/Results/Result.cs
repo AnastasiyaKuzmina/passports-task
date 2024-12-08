@@ -28,25 +28,30 @@ namespace PassportApplication.Results
         /// Returns whether the result contains an error
         /// </summary>
         public bool IsError { get; }
+
         /// <summary>
         /// Returns whether the result doesn't contain an error
         /// </summary>
         public bool IsSuccess => !IsError;
+
         /// <summary>
         /// Result error
         /// </summary>
         public Error? Error => _error;
+
         /// <summary>
         /// Creates Result without error
         /// </summary>
         /// <returns>Result without error</returns>
         public static Result Ok() => new();
+
         /// <summary>
         /// Creates Result with error
         /// </summary>
         /// <param name="message">Error message</param>
         /// <returns>Result with error</returns>
         public static Error Fail(string message) => new(message);
+
         /// <summary>
         /// Creates Result with error
         /// </summary>
@@ -54,6 +59,7 @@ namespace PassportApplication.Results
         /// <param name="innerError">Inner error</param>
         /// <returns>Result with error</returns>
         public static Error Fail(string message, Error innerError) => new(message, innerError);
+
         /// <summary>
         /// Creates Result with error
         /// </summary>
@@ -61,6 +67,7 @@ namespace PassportApplication.Results
         /// <param name="stackTrace">Stack trace</param>
         /// <returns>Result with error</returns>
         public static Error Fail(string message, string stackTrace) => new(message, stackTrace);
+
         /// <summary>
         /// Creates Result with error
         /// </summary>
