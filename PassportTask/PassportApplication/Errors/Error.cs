@@ -18,7 +18,7 @@ namespace PassportApplication.Errors
         public Error(string message)
         {
             Message = message;
-            StackTrace = GetStackTrace();
+            // StackTrace = GetStackTrace();
         }
 
         /// <summary>

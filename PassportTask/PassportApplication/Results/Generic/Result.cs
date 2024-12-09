@@ -32,11 +32,13 @@ namespace PassportApplication.Results.Generic
         /// </summary>
         /// <param name="result">Result instance</param>
         public static implicit operator ActionResult<TValue>(Result<TValue> result) => result.ToActionResult();
+
         /// <summary>
         /// Converts TValue to Result
         /// </summary>
         /// <param name="value"></param>
         public static implicit operator Result<TValue>(TValue value) => new(value);
+
         /// <summary>
         /// Converts Error to Result
         /// </summary>

@@ -2,14 +2,14 @@
 using System.Diagnostics;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.Data.SqlClient;
 
 using PassportApplication.Database;
 using PassportApplication.Readers;
 using PassportApplication.Results;
 using PassportApplication.Services.Interfaces;
-using PassportApplication.Options;
-using Microsoft.Extensions.Options;
+using PassportApplication.Options.UpdateOptions;
 
 namespace PassportApplication.Services.CopyServices
 {
@@ -18,16 +18,16 @@ namespace PassportApplication.Services.CopyServices
     /// </summary>
     public class SqlBulkCopyService : ICopyService
     {
-        private readonly Settings _settings;
+        private readonly UpdateSettings _updateSettings;
         private readonly ApplicationContext _applicationContext;
 
         /// <summary>
         /// Constructor of SqlBulkCopyService
         /// </summary>
         /// <param name="applicationContext">Application context</param>
-        public SqlBulkCopyService(IOptions<Settings> settings, ApplicationContext applicationContext)
+        public SqlBulkCopyService(IOptions<UpdateSettings> updateSettings, ApplicationContext applicationContext)
         {
-            _settings = settings.Value;
+            _updateSettings = updateSettings.Value;
             _applicationContext = applicationContext;
         }
 
@@ -37,7 +37,7 @@ namespace PassportApplication.Services.CopyServices
         /// <returns>Result instance</returns>
         public async Task<Result> CopyAsync(CancellationToken cancellationToken)
         {
-            var extractPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _settings.UpdateSettings.Directory, _settings.UpdateSettings.Extract);
+            var extractPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _updateSettings.Directory, _updateSettings.Extract);
             string filePath = Directory.GetFiles(extractPath)[0];
             IDataReader reader = new CsvReader(filePath);
             using (var bulkCopy = new SqlBulkCopy(_applicationContext.Database.GetConnectionString(), SqlBulkCopyOptions.TableLock))

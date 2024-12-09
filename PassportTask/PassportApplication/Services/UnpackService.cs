@@ -1,8 +1,9 @@
 ﻿using System.IO.Compression;
+using Microsoft.Extensions.Options;
+
 using PassportApplication.Results;
 using PassportApplication.Services.Interfaces;
-using Microsoft.Extensions.Options;
-using PassportApplication.Options;
+using PassportApplication.Options.UpdateOptions;
 
 namespace PassportApplication.Services
 {
@@ -11,10 +12,10 @@ namespace PassportApplication.Services
     /// </summary>
     public class UnpackService : IUnpackService
     {
-        private readonly Settings _settings;
-        public UnpackService(IOptions<Settings> settings) 
+        private readonly UpdateSettings _updateSettings;
+        public UnpackService(IOptions<UpdateSettings> settings) 
         {
-            _settings = settings.Value;
+            _updateSettings = settings.Value;
         }
 
         /// <summary>
@@ -25,8 +26,8 @@ namespace PassportApplication.Services
         /// <returns>Result instance</returns>
         public Result Unpack()
         {
-            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _settings.UpdateSettings.Directory, _settings.UpdateSettings.File);
-            var extractPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _settings.UpdateSettings.Directory, _settings.UpdateSettings.Extract);
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _updateSettings.Directory, _updateSettings.File);
+            var extractPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _updateSettings.Directory, _updateSettings.Extract);
 
             if (!File.Exists(filePath))
             {

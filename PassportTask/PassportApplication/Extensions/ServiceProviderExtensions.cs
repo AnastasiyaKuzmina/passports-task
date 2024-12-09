@@ -3,9 +3,14 @@
 using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
+
 using PassportApplication.Database;
 using PassportApplication.Options;
+using PassportApplication.Options.DatabaseOptions;
 using PassportApplication.Options.Enums;
+using PassportApplication.Options.FormatOptions;
+using PassportApplication.Options.UpdateOptions;
+using PassportApplication.Options.YandexOptions;
 using PassportApplication.Repositories;
 using PassportApplication.Repositories.Interfaces;
 using PassportApplication.Services;
@@ -86,7 +91,10 @@ namespace PassportApplication.Extensions
         {
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.Configure<Settings>(configuration.GetSection("Settings"));
+            serviceCollection.Configure<UpdateSettings>(configuration.GetSection("UpdateSettings"));
+            serviceCollection.Configure<YandexSettings>(configuration.GetSection("YandexSettings"));
+            serviceCollection.Configure<FileSystemSettings>(configuration.GetSection("FileSystemSettings"));
+            serviceCollection.AddSingleton(new FormatSettings());
             serviceCollection.AddDatabase(settings);
             serviceCollection.AddSingleton<UpdateDatabaseJob>();
             serviceCollection.AddSingleton<IFileDownloadService, FileDownloadService>();

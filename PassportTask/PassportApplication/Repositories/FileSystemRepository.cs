@@ -1,7 +1,6 @@
-﻿using Microsoft.Extensions.Options;
-using PassportApplication.Database;
+﻿using PassportApplication.Database;
 using PassportApplication.Models.Dto;
-using PassportApplication.Options;
+using PassportApplication.Options.FormatOptions;
 using PassportApplication.Repositories.Interfaces;
 using PassportApplication.Results;
 using PassportApplication.Results.Generic;
@@ -13,7 +12,7 @@ namespace PassportApplication.Repositories
     /// </summary>
     public class FileSystemRepository : IRepository
     {
-        private readonly Settings _settings;
+        private readonly FormatSettings _formatSettings;
         private readonly FileSystemDatabase _fileSystemDatabase;
 
         /// <summary>
@@ -21,9 +20,9 @@ namespace PassportApplication.Repositories
         /// </summary>
         /// <param name="fileSystemDatabase">File system database</param>
         /// <param name="formatSettings">Format settings</param>
-        public FileSystemRepository(IOptions<Settings> settings, FileSystemDatabase fileSystemDatabase)
+        public FileSystemRepository(FormatSettings formatSettings, FileSystemDatabase fileSystemDatabase)
         {
-            _settings = settings.Value;
+            _formatSettings = formatSettings;
             _fileSystemDatabase = fileSystemDatabase;
         }
 
@@ -50,14 +49,9 @@ namespace PassportApplication.Repositories
             byteNumber = (int)(symbol / 8);
             index = (int)(symbol % 8);
 
-            if (_fileSystemDatabase.CurrentPassportsPath)
-            {
-                path = _fileSystemDatabase.PassportsPath1;
-            }
-            else
-            {
-                path = _fileSystemDatabase.PassportsPath2;
-            }
+            path = _fileSystemDatabase.CurrentPassportsPath 
+                ? _fileSystemDatabase.PassportsPath1 
+                : _fileSystemDatabase.PassportsPath2;
 
             if (File.Exists(path) == false)
             {
@@ -140,7 +134,7 @@ namespace PassportApplication.Repositories
         {
             DateOnly date = new DateOnly(year, month, day);
             string filePath = Path.Combine(_fileSystemDatabase.PassportsHistoryPath, 
-                                            date.ToString(_settings.FileSystemSettings.FileNameFormat) + ".txt");
+                                            date.ToString(_fileSystemDatabase.FileNameFormat) + ".txt");
 
             if (File.Exists(filePath) == false) 
             {
@@ -153,7 +147,7 @@ namespace PassportApplication.Repositories
             List<PassportChangesDto> result = new List<PassportChangesDto>();
 
             string previousFilePath = Path.Combine(_fileSystemDatabase.PassportsHistoryPath, 
-                                                    date.AddDays(-1).ToString(_settings.FileSystemSettings.FileNameFormat) + ".txt");
+                                                    date.AddDays(-1).ToString(_fileSystemDatabase.FileNameFormat) + ".txt");
 
             if (File.Exists(previousFilePath) == false)
             {
@@ -179,19 +173,6 @@ namespace PassportApplication.Repositories
                             AddPassportChanges(bytesToRead1[i], bytesToRead2[i], result, j * 1000 + i);
                         }
                     }
-
-                    //while ((fstreamCurrent.Read(bytesToRead1, 0, bytesToRead1.Length) > 0)
-                    //    && (fstreamPrevious.Read(bytesToRead2, 0, bytesToRead2.Length) > 0))
-                    //{
-                    //    if (bytesToRead1[0] == bytesToRead2[0])
-                    //    {
-                    //        byteNumber++;
-                    //        continue;
-                    //    }
-
-                    //    AddPassportChanges(bytesToRead1, bytesToRead2, result, byteNumber);
-                    //    byteNumber++;
-                    //}
                 }
             }
 
@@ -200,8 +181,8 @@ namespace PassportApplication.Repositories
 
         private bool CheckPassport(string series, string number)
         {
-            if ((_settings.FormatSettings.SeriesTemplate.IsMatch(series) == false)
-                || (_settings.FormatSettings.NumberTemplate.IsMatch(number) == false))
+            if ((_formatSettings.SeriesTemplate.IsMatch(series) == false)
+                || (_formatSettings.NumberTemplate.IsMatch(number) == false))
             {
                 return false;
             }
