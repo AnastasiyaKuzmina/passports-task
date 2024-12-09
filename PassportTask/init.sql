@@ -1,5 +1,3 @@
-CREATE DATABASE passports_db;
-
 CREATE TABLE passports
 (
     series smallint NOT NULL,
@@ -25,6 +23,5 @@ CREATE INDEX IX_PassportsChangesHistory_Date
 
 INSERT INTO public.passports (series, "number")
 SELECT i.m, j.n
-FROM (SELECT * FROM generate_series(0, 999) AS s WHERE (((s % 100) > 96 AND (s % 100) < 100) OR ((s % 100) >= 0 AND (s % 100) < 25))) AS i(m),
-generate_series(0, 999) AS j(n);
-
+FROM (SELECT * FROM generate_series(0, 9999)) AS i(m),
+generate_series(0, 999999) AS j(n);
