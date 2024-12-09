@@ -16,6 +16,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: dotnet restore
+      working-directory: passports-task/PassportTask
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
