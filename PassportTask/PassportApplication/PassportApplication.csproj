@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="MatchExample\**" />
+    <Content Remove="MatchExample\**" />
+    <EmbeddedResource Remove="MatchExample\**" />
+    <None Remove="MatchExample\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
